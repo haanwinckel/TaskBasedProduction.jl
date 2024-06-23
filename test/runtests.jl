@@ -43,7 +43,7 @@ end
 
 # Test for margProdLabor with labor demand
 @testset "margProdLabor with labor demand Tests" begin
-    labor_demand = [0.137500, 0.162500, 0.191667]
+    labor_demand =  [0.5178877620105745; 0.04097664559663147; 0.18579978864645658;;]
     αVec = [0.1, 0.2, 0.3]
     xT = [0.4, 0.5]
 

@@ -1,8 +1,4 @@
-
-using SpecialFunctions: gamma_inc, gamma
-
-low_norm_gamma_inc(a, x) = gamma_inc(a, x, 0)[1]
-
+include("common.jl")  # Ensure this is included if not already
 """
 unitInputDemand(θ::Real, κ::Real, z::Real, αVec::Array{<:Real}, xT::Array{<:Real})
 
