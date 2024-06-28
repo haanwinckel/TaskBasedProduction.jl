@@ -1,4 +1,3 @@
-include("common.jl")  # Ensure this is included if not already
 """
 unitInputDemand(θ::Real, κ::Real, z::Real, αVec::Array{<:Real}, xT::Array{<:Real})
 
