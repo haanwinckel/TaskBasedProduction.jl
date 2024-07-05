@@ -3,14 +3,18 @@ uuid = "0c6611b4-5dad-443c-92fe-8be93fb3df91"
 authors = ["Luca Lorenzini"]
 version = "1.0.0-DEV"
 
+[deps]
+Optim = "429524aa-4258-5aef-a3af-852621145aeb"
+QuadGK = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
+SymPy = "24249f21-da20-56a4-8eb1-6a02cf4ae2e6"
+
 [compat]
 julia = "1.6.7"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
-[deps]
-SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
-Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 [targets]
 test = ["Test"]

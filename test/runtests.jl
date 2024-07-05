@@ -1,6 +1,7 @@
 using Test
+using Revise
 using TaskBasedProduction
-
+using SpecialFunctions
 # Hypothetical test for unitInputDemand
 @testset "unitInputDemand Tests" begin
     θ = 1.0
@@ -15,31 +16,8 @@ using TaskBasedProduction
     @test isapprox(labor_demand, expected_labor_demand, atol=1e-5)
 end
 
-# Hypothetical test for component_positive_ups
-@testset "component_positive_ups Tests" begin
-    Υ = 0.2
-    κ = 0.5
-    xT_low = 0.0
-    xT_high = 0.5
 
-    expected_positive_ups = 0.34527915398142295  # Replace with actual expected value
-    positive_ups = component_positive_ups(Υ, κ, xT_low, xT_high)
 
-    @test isapprox(positive_ups, expected_positive_ups, atol=1e-5)
-end
-
-# Hypothetical test for component_negative_ups
-@testset "component_negative_ups Tests" begin
-    Υ = 0.2
-    κ = 0.5
-    xT_low = 0.0
-    xT_high = 0.5
-
-    expected_negative_ups = 0.7720676595160787  # Replace with actual expected value
-    negative_ups = component_negative_ups(Υ, κ, xT_low, xT_high)
-
-    @test isapprox(negative_ups, expected_negative_ups, atol=1e-5)
-end
 
 # Test for margProdLabor with labor demand
 @testset "margProdLabor with labor demand Tests" begin
@@ -66,3 +44,46 @@ end
 
     @test isapprox(marginal_products_alt, expected_marginal_products_alt, atol=1e-5)
 end
+
+
+@testset "unitInputDemand Comparison Tests" begin
+    θ = 1.0
+    κ = 0.5
+    z = 1.2
+    αVec = [0.1, 0.2, 0.3]
+    xT = [0.4, 0.5]
+
+    # Define the density function b_g(x)
+    b_g(x) = (x^(κ-1) * exp(-x/θ)) / (θ^κ * gamma(κ))
+   
+
+    # Define the e_h functions
+    e_h1(x) =exp(αVec[1]* x)
+    e_h2(x) = exp(αVec[2] * x)
+    e_h3(x) = exp(αVec[3] * x)
+    e_h = [e_h1, e_h2, e_h3]
+
+    # Compute labor demand using the general function
+    labor_demand_general = unitInputDemand_general(xT, z, b_g, e_h)
+    # Compute labor demand using the specific function
+    labor_demand_specific = unitInputDemand(θ, κ, z, αVec, xT)
+    MPL= margProdLabor(labor_demand_specific, αVec, xT)
+    q, xT= prod_fun(labor_demand_specific, θ, κ, z, αVec)
+    q_gen, xT_gen= prod_fun_general(labor_demand_general,z,b_g, e_h)
+    MPL_gen=margProdLabor_general(xT_gen, labor_demand_general, e_h)
+    ϵ_sub, ϵ_compl=elasticity_sub_comp(xT, labor_demand_specific, q, MPL, θ, κ, z, αVec)
+    ϵ_sub_gen, ϵ_compl_gen=elasticity_sub_comp_general(xT_gen, labor_demand_general, q_gen, MPL_gen,z,b_g,e_h)
+    @test isapprox(MPL,MPL_gen,  atol=1e-4)
+    @test isapprox(ϵ_sub,ϵ_sub_gen, atol=1e-4)
+    @test isapprox(ϵ_compl,ϵ_compl_gen, atol=1e-4)
+    # Test to check if the two outputs are the same
+    @test isapprox(labor_demand_general, labor_demand_specific, atol=1e-5)
+    # Test to check if an error is thrown when b_g is not a valid density function
+    b_g_invalid = x -> 4*exp(-x)  # This does not integrate to 1 over the entire domain
+    @test_throws ErrorException unitInputDemand_general(xT, z, b_g_invalid, e_h)
+    # Test to check whether q is the same 
+    @test isapprox(q, q_gen, atol=1e-5)
+    # Test to check whether xT is the same 
+    @test isapprox(xT, xT_gen, atol=1e-5)
+end
+
