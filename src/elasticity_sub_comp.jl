@@ -35,12 +35,11 @@ function elasticity_sub_comp(xT::AbstractArray{<:Real}, l::AbstractArray{<:Real}
     end
 
     for h in 1:H
-        for h_prime in 1:H
+        for h_prime in h+1:H
             if h<h_prime
                 if h_prime == h + 1
                 ϵ_h_sub[h, h_prime] = ρ_h[h] / (s_h[h] * s_h[h_prime])
                 end
-            else ϵ_h_sub[h, h_prime] = NaN
             end
 
         end
@@ -49,7 +48,7 @@ function elasticity_sub_comp(xT::AbstractArray{<:Real}, l::AbstractArray{<:Real}
     temp= zeros(H,H, H)
 
     for h in 1:H
-        for h_prime in h:H
+        for h_prime in h+1:H
             for h_bold in 1:H 
                 xi[h, h_prime, h_bold]=((h>=h_bold+1 ? 1 : 0)-sum(s_h[h_bold+1:H]))*((h_bold>=h_prime ? 1 : 0)-sum(s_h[1:h_bold]))
                 temp[h, h_prime, h_bold]=xi[h, h_prime, h_bold]*(1/ρ_h[h_bold])
