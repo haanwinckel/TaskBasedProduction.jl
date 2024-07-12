@@ -47,9 +47,7 @@ println("Quantity Produced: ", q_gen)
 println("Task Thresholds: ", xT_gen)
 MPL_gen=margProdLabor_general(xT_gen, labor_demand_general, e_h)
 ϵ_sub_gen, ϵ_compl_gen=elasticity_sub_comp_general(xT_gen, labor_demand_general, q_gen, MPL,z,b_g,e_h)
-isapprox(ϵ_sub,ϵ_sub_gen, atol=1e-4)
-isapprox(ϵ_compl,ϵ_compl_gen, atol=1e-4)
-isapprox(MPL,MPL_gen,  atol=1e-4)
+
 
 
 
