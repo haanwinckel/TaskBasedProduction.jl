@@ -1,27 +1,26 @@
 """
-elasticity_sub_comp_general(xT::AbstractArray{<:Real},l::AbstractArray{<:Real}, q::Real, MPL::AbstractArray{<:Real}, z:: Real, b_g::Function, e_h::Vector{Function})
+    elasticity_sub_comp_general(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}) -> (AbstractArray{<:Real}, AbstractArray{<:Real})
 
 Calculates the elasticity of substitution and complementarity for a given set of parameters.
 
-Parameters:
-- xT: Array of task thresholds with H-1 elements.
-- l: Array of labor inputs of different types with H elements.
-- q: Total output.
-- MPL: Array of marginal products of labor for each worker type with H elements.
-- b_g: general task density function
-- e_h: vector of comparative advantage functions
+# Arguments
+- `labor_input`: An array of labor inputs of different types with H elements.
+- `z`: Productivity parameter.
+- `b_g`: General task density function.
+- `e_h`: Vector of comparative advantage functions.
 
-Returns:
-- ϵ_h_sub: Matrix of elasticity of substitution values for each worker type h (rows) relative to worker type h_prime (columns).
-- ϵ_h_comp: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
-
+# Returns
+- `ϵ_h_sub`: Matrix of elasticity of substitution values for each worker type h (rows) relative to worker type h_prime (columns).
+- `ϵ_h_compl`: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
 """
 
 
-function elasticity_sub_comp_general(xT::AbstractArray{<:Real},l::AbstractArray{<:Real}, q::Real, MPL::AbstractArray{<:Real}, z:: Real, b_g::Function, e_h::Vector{Function})
-    H = length(l)
+function elasticity_sub_comp_general(labor_input::AbstractArray{<:Real}, z:: Real, b_g::Function, e_h::Vector{Function})
+    q, xT= prod_fun_general(labor_input, z, b_g, e_h)
+    MPL=margProdLabor_general(labor_input, z, b_g, e_h)
+    H = length(labor_input)
     ρ_h = zeros(Float64, H)
-    s_h = MPL .* l / q
+    s_h = MPL .* labor_input / q
     ϵ_h_sub = zeros(Float64, H, H)
     ϵ_h_compl = zeros(Float64, H, H)
     xT = vcat(xT, Inf)  # Add highest thresholds for highest worker type

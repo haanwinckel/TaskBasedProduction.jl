@@ -1,12 +1,20 @@
 """
-unitInputDemand(θ::Real, κ::Real, z::Real, αVec::Array{<:Real}, xT::Array{<:Real})
+    unitInputDemand(xT::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}, skipParamChecks::Bool = false) -> AbstractArray{<:Real}
 
-Calculates unit labor demands given blueprint scale θ, blueprint shape κ,
-productivity z, an array of comparative advantage values αVec with H elements
-(one for each worker type), and an array xT of H-1 thresholds in task space.
+Calculates unit labor demands given blueprint scale `θ`, blueprint shape `κ`, productivity `z`, an array of comparative advantage values `αVec` with H elements (one for each worker type), and an array `xT` of H-1 thresholds in task space.
+
+# Arguments
+- `xT`: An array of H-1 thresholds in task space.
+- `θ`: Blueprint scale parameter.
+- `κ`: Blueprint shape parameter.
+- `z`: Productivity parameter.
+- `αVec`: An array of comparative advantage values with H elements.
+- `skipParamChecks`: A boolean indicating whether to skip parameter checks (default is false).
+
+# Returns
+- An array representing the labor demand for each labor type.
 """
-function unitInputDemand(θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real},
-                         xT::AbstractArray{<:Real}, skipParamChecks::Bool = false)
+function unitInputDemand(xT::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real},  skipParamChecks::Bool = false)
     
     if !skipParamChecks
         @assert θ > 0
@@ -17,19 +25,19 @@ function unitInputDemand(θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Rea
     end
 
     H = length(xT) + 1
-    l = fill(0.0, H, 1)
+    labor_input = fill(0.0, H, 1)
     xT = vcat(0.0, xT, Inf) # Add lowest and highest thresholds
     for h in 1:H
         α = αVec[h]
         Υ = α + 1/θ
         if Υ > 0.0
-            l[h] = component_positive_ups(Υ, κ, xT[h], xT[h+1]) / Υ^κ
+            labor_input[h] = component_positive_ups(Υ, κ, xT[h], xT[h+1]) / Υ^κ
         elseif Υ == 0.0
-            l[h] = (xT[h+1]^κ - xT[h]^κ) / (κ * gamma(κ))
+            labor_input[h] = (xT[h+1]^κ - xT[h]^κ) / (κ * gamma(κ))
         else
-            l[h] = component_negative_ups(Υ, κ, xT[h], xT[h+1])
+            labor_input[h] = component_negative_ups(Υ, κ, xT[h], xT[h+1])
         end
     end
-    l = l ./ (z * θ^κ)
+    labor_input = labor_input ./ (z * θ^κ)
 end
 

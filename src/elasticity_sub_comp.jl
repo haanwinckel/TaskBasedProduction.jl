@@ -1,27 +1,25 @@
 """
-elasticity_sub_comp(xT::AbstractArray{<:Real}, l::AbstractArray{<:Real}, q::Real, MPL::AbstractArray{<:Real}, θ::Union{Real, AbstractArray{<:Real}}, κ::Union{Real, AbstractArray{<:Real}}, z::Union{Real, AbstractArray{<:Real}}, αVec::AbstractArray{<:Real})
+    elasticity_sub_comp(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}) -> (AbstractArray{<:Real}, AbstractArray{<:Real})
 
 Calculates the elasticity of substitution and complementarity for a given set of parameters.
 
-Parameters:
-- xT: Array of task thresholds with H-1 elements.
-- l: Array of labor inputs of different types with H elements.
-- q: Total output.
-- MPL: Array of marginal products of labor for each worker type with H elements.
-- θ: Blueprint scale parameter 
-- κ: Blueprint shape parameter 
-- z: Productivity parameter 
-- αVec: Array of comparative advantage values with H elements.
+# Arguments
+- `labor_input`: An array of labor inputs of different types with H elements.
+- `θ`: Blueprint scale parameter.
+- `κ`: Blueprint shape parameter.
+- `z`: Productivity parameter.
+- `αVec`: An array of comparative advantage values with H elements.
 
-Returns:
-- ϵ_h_sub: Matrix of elasticity of substitution values for each worker type h (rows) relative to worker type h_prime (columns).
-- ϵ_h_comp: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
-
+# Returns
+- `ϵ_h_sub`: Matrix of elasticity of substitution values for each worker type h (rows) relative to worker type h_prime (columns).
+- `ϵ_h_compl`: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
 """
-function elasticity_sub_comp(xT::AbstractArray{<:Real}, l::AbstractArray{<:Real}, q::Real, MPL::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real})
+function elasticity_sub_comp(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real})
+    q, xT= prod_fun(labor_input, θ, κ, z, αVec)
+    MPL= margProdLabor(labor_input, θ, κ, z, αVec)
     H = length(αVec)
     ρ_h = zeros(Float64, H)
-    s_h = MPL.*l/q
+    s_h = MPL.*labor_input/q
     ϵ_h_sub=zeros(Float64, H, H)
     ϵ_h_compl=zeros(Float64, H, H)
     xT = vcat(xT, Inf)  # Add highest thresholds for highest worker type
