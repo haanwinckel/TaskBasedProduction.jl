@@ -13,6 +13,8 @@ include("prod_fun_general.jl")
 include("margProdLabor_general.jl")
 include("elasticity_sub_comp_general.jl")
 include("numerical_derivative.jl")
-export unitInputDemand, margProdLabor,margProdLabor_general, prod_fun, elasticity_sub_comp, unitInputDemand_general, prod_fun_general, elasticity_sub_comp_general
+include("find_initial_guess.jl")
+include("find_initial_guess_gen.jl")
+export find_initial_guess, find_initial_guess_gen, unitInputDemand, margProdLabor,margProdLabor_general, prod_fun, elasticity_sub_comp, unitInputDemand_general, prod_fun_general, elasticity_sub_comp_general
 
 end # module
