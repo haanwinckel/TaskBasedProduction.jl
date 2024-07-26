@@ -73,45 +73,225 @@ println("General case Hicks partial elasticity of substitution: ", ϵ_compl_gen)
 ```
 ## Functions and Features
 # 1) unitInputDemand
-Calculates unit labor demands given blueprint scale θ, blueprint shape κ, productivity z, an array of comparative advantage values αVec, and an array xT of thresholds in task space.
+Calculates unit labor demands given blueprint scale `θ`, blueprint shape `κ`, productivity `z`, an array of comparative advantage values `αVec` with H elements (one for each worker type), and an array `xT` of H-1 thresholds in task space.
 
-# 2) unitInputDemand(θ::Real, κ::Real, z::Real, αVec::Array{<:Real}, xT::Array{<:Real}, skipParamChecks::Bool = false)
-margProdLabor
-Calculates marginal products of labor for each worker type given blueprint characteristics or an array of labor demands.
+# Arguments
+- `xT`: An array of H-1 thresholds in task space.
+- `θ`: Blueprint scale parameter.
+- `κ`: Blueprint shape parameter.
+- `z`: Productivity parameter.
+- `αVec`: An array of comparative advantage values with H elements.
+- `skipParamChecks`: A boolean indicating whether to skip parameter checks (default is false).
 
-# 3) margProdLabor(inputDemand::Array{<:Real}, αVec::Array{<:Real}, xT::Array{<:Real})
-margProdLabor(θ::Real, κ::Real, z::Real, αVec::Array{<:Real}, xT::Array{<:Real})
-# 4) prod_fun
-Calculates the quantity produced (q) and task thresholds (xbar) given labor inputs (l), blueprint scale θ, blueprint shape κ, productivity z, and an array of comparative advantage values αVec with H elements (one for each worker type).
+# Returns
+- An array representing the labor demand for each labor type.
+```julia
+    unitInputDemand(xT::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}, skipParamChecks::Bool = false) -> AbstractArray{<:Real}
+ ```
+# 2) margProdLabor
+Calculates the marginal productivity of labor for each worker type given the input parameters.
 
+# Arguments
+- `labor_input`: An array of labor demand values.
+- `θ`: Blueprint scale parameter.
+- `κ`: Blueprint shape parameter.
+- `z`: Productivity parameter.
+- `αVec`: An array of comparative advantage values.
+- `xT`: (optional) An array representing the precomputed task thresholds. If not provided, it will be computed within the function.
+- `q`: (optional) A scalar representing the precomputed quantity produced. If not provided, it will be computed within the function.
 
-prod_fun(l::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real})
+# Returns
+- An array representing the marginal productivity of labor for each worker type.
+```julia 
+    margProdLabor(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; xT=nothing) -> AbstractArray{<:Real}
+```
+# 3) prod_fun
+"""
+Calculates the quantity produced (q), and task thresholds (xT) given labor inputs (l), blueprint scale θ, blueprint shape κ, productivity z, and an array of 
+comparative advantage values αVec with H elements (one for each worker type).
 
-# 5) elasticity_sub_comp
-Calculates the elasticity of substitution and complementarities for given labor inputs (l), an array xT of thresholds in task space (dimension H-1), array of marginal product of labor (MPL) for each H labor types, blueprint scale θ, blueprint shape κ, productivity z, and an array of comparative advantage values αVec with H elements (one for each worker type). The function returns two matrices representing the elasticity of substitution and complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
+Inputs:
+- `labor_input`: Array of labor inputs of different types.
+- `θ`: Blueprint scale parameter.
+- `κ`: Blueprint shape parameter.
+- `z`: Productivity parameter.
+- `αVec`: Array of comparative advantage values with H elements.
+- `initial_guess`: (optional) Initial guess for optimization. If not provided, defaults to zeros array.
+- `optim_options`: (optional) Optimization options. If not provided, defaults to high tolerance values.
 
-elasticity_sub_comp(xT::AbstractArray{<:Real}, l::AbstractArray{<:Real}, q::Real, MPL::AbstractArray{<:Real}, θ::Union{Real, AbstractArray{<:Real}}, κ::Union{Real, AbstractArray{<:Real}}, z::Union{Real, AbstractArray{<:Real}}, αVec::AbstractArray{<:Real})
+Returns:
+- `q`: Quantity produced.
+- `xT`: Array of task thresholds.
+- `fval`: Final value of the objective function.
+"""
+``` julia
+    prod_fun(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; initial_guess=nothing, optim_options=nothing)
+```
+# 4) elasticity_sub_comp
+"""
+Calculates the elasticity of substitution and complementarity for a given set of parameters.
 
-# 6) unitInputDemand_general
-Calculates unit labor demands given an array xT of H-1 thresholds in task space, productivity value z, a density function b_g for the task distribution, and an array e_h of H functions representing the cost of each labor type as a function of task complexity.
+# Arguments
+- `labor_input`: An array of labor inputs of different types with H elements.
+- `θ`: Blueprint scale parameter.
+- `κ`: Blueprint shape parameter.
+- `z`: Productivity parameter.
+- `αVec`: An array of comparative advantage values with H elements.
+- `MPL`: (optional) An array representing the marginal productivity of labor. If not provided, it will be computed within the function.
+- `xT`: (optional) An array representing precomputed task thresholds. If not provided, it will be computed within the function.
 
+# Returns
+- `ϵ_h_sub`: Matrix of elasticity of substitution values for each worker type h (rows) relative to worker type h_prime (columns).
+- `ϵ_h_compl`: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
+"""
+``` julia
+    elasticity_sub_comp(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; MPL=nothing, xT=nothing) -> (AbstractArray{<:Real}, AbstractArray{<:Real})
+```
+# 5) unitInputDemand_general
+"""
+Calculates unit labor demands given an array `xT` of H-1 thresholds in task space, a productivity value `z`, 
+a density function `b_g` for the task distribution, and an array `e_h` of H functions
+representing the cost of each labor type as a function of task complexity.
 
-# 7) unitInputDemand_general(xT::Vector{Float64}, z::Real, b_g::Function, e_h::Vector{Function})
-margProdLabor_general
-Calculate marginal products of labor for each worker type given an array of H labor demand values, a vector of comparative advantage functions e_h, and an array of H-1 task thresholds xT that corresponds to that labor demand.
+The function first verifies that `b_g` is a valid density function. Then it computes
+the labor demand for each labor type by numerically integrating the ratio `b_g(x) / (z * e_h[h](x))`
+over the intervals defined by the thresholds in `xT`.
 
-# 8) margProdLabor_general(inputDemand::Array{<:Real}, αVec::Array{<:Real}, xT::Array{<:Real})
-prod_fun_general
-Calculates the quantity produced (q), and task thresholds (xbar) given labor inputs (l), productivity z, and general blueprint density function and a vector of efficiency functions, one for each labor type.
+# Arguments
+- `xT`: A vector of H-1 thresholds in task space.
+- `z`: Productivity value.
+- `b_g`: A density function for the task distribution.
+- `e_h`: A vector of H functions representing the cost of each labor type as a function of task complexity.
 
+# Returns
+- A vector representing the labor demand for each labor type.
+"""
 
-# 9) prod_fun_general(l::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function})
-elasticity_sub_comp_general
-Calculates the elasticity of substitution and complementarities for given labor inputs (l), an array xT of thresholds in task space (dimension H-1), array of marginal product of labor (MPL) for each H labor types, blueprint density function b_g, firm productivity z, and a vector of comparative advantage function e_h. The function returns two matrices representing the elasticity of substitution and complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
+``` julia 
+unitInputDemand_general(xT::Vector{Float64}, z::Real, b_g::Function, e_h::Vector{Function}) -> Vector{Float64}
+```
+# 6) margProdLabor_general
+"""
+Calculates the marginal productivity of labor for each worker type given the input parameters.
 
+# Arguments
+- `labor_input`: An array of labor inputs of different types with H elements.
+- `z`: A productivity scalar.
+- `b_g`: A task density function.
+- `e_h`: A vector of comparative advantage functions.
+- `xT`: (optional) An array representing the precomputed task thresholds. If not provided, it will be computed within the function.
+- `q`: (optional) A scalar representing the precomputed quantity produced. If not provided, it will be computed within the function.
 
-# 10) elasticity_sub_comp_general(xT::AbstractArray{<:Real}, l::AbstractArray{<:Real}, q::Real, MPL::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function})
+# Returns
+- An array representing the marginal productivity of labor for each worker type.
+"""
+``` julia
+margProdLabor_general(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}; xT=nothing) -> AbstractArray{<:Real}
+```
+# 7) prod_fun_general
+"""
+Calculates the quantity produced (q), and task thresholds (xT) given labor inputs (labor_input), productivity z, general blueprint density function (b_g), and a vector of efficiency functions (e_h), one for each labor type.
 
+Inputs:
+- `labor_input`: Array of labor inputs of different types.
+- `z`: Productivity parameter.
+- `b_g`: Blueprint density function.
+- `e_h`: Vector of efficiency functions, one for each type.
+- `initial_guess`: (optional) Initial guess for optimization. If not provided, defaults to zeros array.
+- `x_tol`: (optional) Tolerance for the solution vector. Default is 1e-12.
+- `f_tol`: (optional) Tolerance for the function value. Default is 1e-12.
+- `g_tol`: (optional) Tolerance for the gradient. Default is 1e-12.
+- `iterations`: (optional) Maximum number of iterations for the optimization. Default is 1000.
+- `max_retries`: (optional) Maximum number of retries if the optimization fails. Default is 5.
+
+Returns:
+- `q`: Quantity produced.
+- `xT`: Array of task thresholds.
+- `fval`: Final value of the objective function.
+"""
+``` julia
+    prod_fun_general(labor_input::AbstractArray{<:Real}, z::Real, b_g:: Function, e_h::Vector{Function}; initial_guess=nothing, x_tol=1e-12, f_tol=1e-12, g_tol=1e-12, iterations=1000, max_retries=5)
+```
+# 8) elasticity_sub_comp_general
+"""
+Calculates the elasticity of substitution and complementarity for a given set of parameters.
+
+# Arguments
+- `labor_input`: An array of labor inputs of different types with H elements.
+- `z`: Productivity parameter.
+- `b_g`: General task density function.
+- `e_h`: Vector of comparative advantage functions.
+- `MPL`: (optional) An array representing the marginal productivity of labor. If not provided, it will be computed within the function.
+- `xT`: (optional) An array representing precomputed task thresholds. If not provided, it will be computed within the function.
+
+# Returns
+- `ϵ_h_sub`: Matrix of elasticity of substitution values for each worker type h (rows) relative to worker type h_prime (columns).
+- `ϵ_h_compl`: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
+"""
+``` julia
+    elasticity_sub_comp_general(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}; MPL=nothing, xT=nothing) -> (AbstractArray{<:Real}, AbstractArray{<:Real})
+```
+
+# 9) find_initial_guess
+"""
+Generate an initial guess for the optimization problem in `prod_fun` such that the implied labor demand is non-trivial.
+
+# Arguments
+- `labor_input::AbstractArray{<:Real}`: The observed labor input for each task.
+- `θ::Real`: The scale parameter of the gamma distribution.
+- `κ::Real`: The shape parameter of the gamma distribution.
+- `z::Real`: A scaling factor for the labor input.
+- `αVec::AbstractArray{<:Real}`: An array of task-specific parameters.
+- `threshold::Real`: The minimum acceptable labor demand for each task.
+
+# Returns
+- `initial_guess::Array{<:Real}`: A vector containing the initial guess for the optimization, including the log of the initial production quantity `q` and the initial task thresholds `xT`.
+
+# Description
+This function generates an initial guess for the optimization problem by:
+1. Fixing the initial guess for `q` at 1.
+2. Generating initial `xT` values using random percentiles from the gamma distribution defined by `θ` and `κ`.
+3. Adjusting the `xT` values iteratively to ensure the implied labor demand for each task is above the specified threshold.
+
+If the implied labor demand for any task is below the threshold, the `xT` values are re-shuffled using the `generate_initial_xT` function. This process continues until the implied labor demand for all tasks is above the threshold or the maximum number of iterations is reached.
+
+If the adjustment process encounters an error, new `xT` values are generated from scratch.
+"""
+``` julia
+    find_initial_guess(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; threshold::Real=1e-2)
+```
+
+# 10) find_initial_guess_gen
+"""
+  
+Generate an initial guess for the optimization problem using a general density function such that the implied labor demand is non-trivial.
+
+# Arguments
+- `labor_input::AbstractArray{<:Real}`: The observed labor input for each task.
+- `z::Real`: A scaling factor for the labor input.
+- `αVec::AbstractArray{<:Real}`: An array of task-specific parameters.
+- `pdf::Function`: The general density function.
+- `threshold::Real`: The minimum acceptable labor demand for each task.
+- `verbose::Bool`: Optional boolean flag to enable or disable verbose output for debugging.
+
+# Returns
+- `initial_guess::Array{<:Real}`: A vector containing the initial guess for the optimization, including the log of the initial production quantity `q` and the initial task thresholds `xT`.
+
+# Description
+This function generates an initial guess for the optimization problem by:
+1. Fixing the initial guess for `q` at 1.
+2. Generating initial `xT` values using random percentiles from the provided CDF function.
+3. Adjusting the `xT` values iteratively to ensure the implied labor demand for each task is above the specified threshold.
+
+If the implied labor demand for any task is below the threshold, the `xT` values are re-shuffled using the `generate_initial_xT` function. This process continues until the implied labor demand for all tasks is above the threshold or the maximum number of iterations is reached.
+
+If the adjustment process encounters an error, new `xT` values are generated from scratch.
+
+Verbose output can be enabled by setting the `verbose` parameter to `true`, which will print debug information during the percentile calculation.
+"""
+``` julia
+  find_initial_guess_gen(labor_input::AbstractArray{<:Real}, z::Real, αVec::AbstractArray{<:Real}, pdf::Function; threshold::Real=1e-2, verbose::Bool=false)
+``` 
 
 ## Contributing
 Contributions are welcome! Please feel free to submit a pull request or open an issue if you have any suggestions or find any bugs.
