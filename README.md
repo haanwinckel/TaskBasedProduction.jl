@@ -74,44 +74,47 @@ println("General case Hicks partial elasticity of substitution: ", ϵ_compl_gen)
 ## Functions and Features
 # 1) unitInputDemand
 Calculates unit labor demands given blueprint scale θ, blueprint shape κ, productivity z, an array of comparative advantage values αVec, and an array xT of thresholds in task space.
-
-# 2) unitInputDemand(θ::Real, κ::Real, z::Real, αVec::Array{<:Real}, xT::Array{<:Real}, skipParamChecks::Bool = false)
-margProdLabor
+```julia
+ unitInputDemand(θ::Real, κ::Real, z::Real, αVec::Array{<:Real}, xT::Array{<:Real}, skipParamChecks::Bool = false)
+ ```
+# 2) margProdLabor
 Calculates marginal products of labor for each worker type given blueprint characteristics or an array of labor demands.
-
-# 3) margProdLabor(inputDemand::Array{<:Real}, αVec::Array{<:Real}, xT::Array{<:Real})
-margProdLabor(θ::Real, κ::Real, z::Real, αVec::Array{<:Real}, xT::Array{<:Real})
-# 4) prod_fun
+```julia 
+margProdLabor(inputDemand::Array{<:Real}, αVec::Array{<:Real}, xT::Array{<:Real})
+```
+# 3) prod_fun
 Calculates the quantity produced (q) and task thresholds (xbar) given labor inputs (l), blueprint scale θ, blueprint shape κ, productivity z, and an array of comparative advantage values αVec with H elements (one for each worker type).
 
-
+``` julia
 prod_fun(l::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real})
-
-# 5) elasticity_sub_comp
+```
+# 4) elasticity_sub_comp
 Calculates the elasticity of substitution and complementarities for given labor inputs (l), an array xT of thresholds in task space (dimension H-1), array of marginal product of labor (MPL) for each H labor types, blueprint scale θ, blueprint shape κ, productivity z, and an array of comparative advantage values αVec with H elements (one for each worker type). The function returns two matrices representing the elasticity of substitution and complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
-
+``` julia
 elasticity_sub_comp(xT::AbstractArray{<:Real}, l::AbstractArray{<:Real}, q::Real, MPL::AbstractArray{<:Real}, θ::Union{Real, AbstractArray{<:Real}}, κ::Union{Real, AbstractArray{<:Real}}, z::Union{Real, AbstractArray{<:Real}}, αVec::AbstractArray{<:Real})
-
-# 6) unitInputDemand_general
+```
+# 5) unitInputDemand_general
 Calculates unit labor demands given an array xT of H-1 thresholds in task space, productivity value z, a density function b_g for the task distribution, and an array e_h of H functions representing the cost of each labor type as a function of task complexity.
 
-
-# 7) unitInputDemand_general(xT::Vector{Float64}, z::Real, b_g::Function, e_h::Vector{Function})
-margProdLabor_general
+``` julia 
+unitInputDemand_general(xT::Vector{Float64}, z::Real, b_g::Function, e_h::Vector{Function})
+```
+# 6) margProdLabor_general
 Calculate marginal products of labor for each worker type given an array of H labor demand values, a vector of comparative advantage functions e_h, and an array of H-1 task thresholds xT that corresponds to that labor demand.
-
-# 8) margProdLabor_general(inputDemand::Array{<:Real}, αVec::Array{<:Real}, xT::Array{<:Real})
-prod_fun_general
+``` julia
+margProdLabor_general(inputDemand::Array{<:Real}, αVec::Array{<:Real}, xT::Array{<:Real})
+```
+# 7) prod_fun_general
 Calculates the quantity produced (q), and task thresholds (xbar) given labor inputs (l), productivity z, and general blueprint density function and a vector of efficiency functions, one for each labor type.
 
-
-# 9) prod_fun_general(l::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function})
-elasticity_sub_comp_general
+``` julia
+prod_fun_general(l::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function})
+```
+# 8) elasticity_sub_comp_general
 Calculates the elasticity of substitution and complementarities for given labor inputs (l), an array xT of thresholds in task space (dimension H-1), array of marginal product of labor (MPL) for each H labor types, blueprint density function b_g, firm productivity z, and a vector of comparative advantage function e_h. The function returns two matrices representing the elasticity of substitution and complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
-
-
-# 10) elasticity_sub_comp_general(xT::AbstractArray{<:Real}, l::AbstractArray{<:Real}, q::Real, MPL::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function})
-
+``` julia
+elasticity_sub_comp_general(xT::AbstractArray{<:Real}, l::AbstractArray{<:Real}, q::Real, MPL::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function})
+```
 
 ## Contributing
 Contributions are welcome! Please feel free to submit a pull request or open an issue if you have any suggestions or find any bugs.
