@@ -248,14 +248,6 @@ Generate an initial guess for the optimization problem in `prod_fun` such that t
 - `initial_guess::Array{<:Real}`: A vector containing the initial guess for the optimization, including the log of the initial production quantity `q` and the initial task thresholds `xT`.
 
 # Description
-This function generates an initial guess for the optimization problem by:
-1. Fixing the initial guess for `q` at 1.
-2. Generating initial `xT` values using random percentiles from the gamma distribution defined by `θ` and `κ`.
-3. Adjusting the `xT` values iteratively to ensure the implied labor demand for each task is above the specified threshold.
-
-If the implied labor demand for any task is below the threshold, the `xT` values are re-shuffled using the `generate_initial_xT` function. This process continues until the implied labor demand for all tasks is above the threshold or the maximum number of iterations is reached.
-
-If the adjustment process encounters an error, new `xT` values are generated from scratch.
 """
 ``` julia
     find_initial_guess(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; threshold::Real=1e-2)
@@ -276,18 +268,6 @@ Generate an initial guess for the optimization problem using a general density f
 
 # Returns
 - `initial_guess::Array{<:Real}`: A vector containing the initial guess for the optimization, including the log of the initial production quantity `q` and the initial task thresholds `xT`.
-
-# Description
-This function generates an initial guess for the optimization problem by:
-1. Fixing the initial guess for `q` at 1.
-2. Generating initial `xT` values using random percentiles from the provided CDF function.
-3. Adjusting the `xT` values iteratively to ensure the implied labor demand for each task is above the specified threshold.
-
-If the implied labor demand for any task is below the threshold, the `xT` values are re-shuffled using the `generate_initial_xT` function. This process continues until the implied labor demand for all tasks is above the threshold or the maximum number of iterations is reached.
-
-If the adjustment process encounters an error, new `xT` values are generated from scratch.
-
-Verbose output can be enabled by setting the `verbose` parameter to `true`, which will print debug information during the percentile calculation.
 """
 ``` julia
   find_initial_guess_gen(labor_input::AbstractArray{<:Real}, z::Real, αVec::AbstractArray{<:Real}, pdf::Function; threshold::Real=1e-2, verbose::Bool=false)
