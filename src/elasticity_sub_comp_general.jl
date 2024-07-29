@@ -15,11 +15,9 @@ Calculates the elasticity of substitution and complementarity for a given set of
 - `ϵ_h_sub`: Matrix of elasticity of substitution values for each worker type h (rows) relative to worker type h_prime (columns).
 - `ϵ_h_compl`: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
 """
-function elasticity_sub_comp_general(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}, MPL=nothing, xT=nothing)
-    if xT === nothing
+function elasticity_sub_comp_general(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}, MPL=nothing, xT=nothing, q=nothing)
+    if xT === nothing || q===nothing
         q, xT = prod_fun_general(labor_input, z, b_g, e_h)
-    else
-        q, _ = prod_fun_general(labor_input, z, b_g, e_h)  # Recompute q with the given xT
     end
 
     if MPL === nothing

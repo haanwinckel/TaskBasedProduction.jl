@@ -1,3 +1,4 @@
+```julia
 using Revise
 using TaskBasedProduction 
 using SpecialFunctions
@@ -52,6 +53,5 @@ println("Quantity Produced: ", q_gen)
 println("Task Thresholds: ", xT_gen)
 MPL_gen=margProdLabor_general(labor_input_general, z, b_g, e_h, xT_gen, q_gen)
 ϵ_sub_gen, ϵ_compl_gen=elasticity_sub_comp_general(labor_input_general, z, b_g, e_h, MPL_gen, xT_gen)
-
 
 

@@ -1,4 +1,3 @@
-
 """
     unitInputDemand_general(xT::Vector{Float64}, z::Real, b_g::Function, e_h::Vector{Function}) -> Vector{Float64}
 

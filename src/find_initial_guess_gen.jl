@@ -27,7 +27,7 @@ If the adjustment process encounters an error, new `xT` values are generated fro
 Verbose output can be enabled by setting the `verbose` parameter to `true`, which will print debug information during the percentile calculation.
 """
 function find_initial_guess_gen(z::Real, b_g::Function, e_h::Vector{Function}; threshold::Real=1e-2, verbose::Bool=false)
-    H = length(e_h)  # Number of tasks
+    H = length(e_h)  # Number of labor types
     # Initial guess for q is fixed at 1
     initial_q = 0.0  # log(1) is 0
     

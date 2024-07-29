@@ -1,8 +1,6 @@
 using Test
-using Revise
 using TaskBasedProduction
 using SpecialFunctions
-
 # Function to run the tests
 function run_tests(labor_input::Vector{Float64})
     # Initialize common parameters for tests
