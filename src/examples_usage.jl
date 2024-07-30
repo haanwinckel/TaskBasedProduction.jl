@@ -1,7 +1,6 @@
-using Revise
 using TaskBasedProduction 
-using SpecialFunctions
-using QuadGK
+using SpecialFunctions # Needed to define the pdf b_g for the general parameterization case
+
 
 θ = 1.0
 κ = 0.5

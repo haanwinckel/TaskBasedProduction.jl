@@ -12,10 +12,10 @@ To install TaskBasedProduction, you can clone the repository and add it to your 
 using Pkg
 Pkg.add(url="https://github.com/haanwinckel/TaskBasedProduction.git")
 
-using Revise
+
 using TaskBasedProduction 
 using SpecialFunctions
-using QuadGK
+
 
 θ = 1.0
 κ = 0.5
