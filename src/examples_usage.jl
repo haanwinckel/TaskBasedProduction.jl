@@ -1,7 +1,4 @@
 using TaskBasedProduction 
-using SpecialFunctions # Needed to define the pdf b_g for the general parameterization case
-
-using Revise
 θ = 1.0
 κ = 0.5
 z = 1.2
@@ -36,7 +33,9 @@ println("Hicks partial elasticity of substitution:", ϵ_compl)
 ## GENERAL PARAMETERIZATION OF FUNCTIONS
 
 # Define the density function b_g(x)
-b_g(x) = (x^(κ-1) * exp(-x/θ)) / (θ^κ * gamma(κ))
+using SpecialFunctions # Note: this package is needed only to compare the output of the general parameterization with the output of the Gamma parameterization. It is used in the next line to obtain the PDF of a Gamma distribution.
+
+b_g(x) = (x^(κ - 1) * exp(-x / θ)) / (θ^κ * gamma(κ)) # Gamma PDF with the same parameterization as above for comparability
 e_h1(x)=exp(0.1*x)
 e_h2(x)=exp(0.2*x)
 e_h3(x)=exp(0.3*x)
