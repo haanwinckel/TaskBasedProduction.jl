@@ -1,7 +1,7 @@
 using TaskBasedProduction 
 using SpecialFunctions # Needed to define the pdf b_g for the general parameterization case
 
-
+using Revise
 θ = 1.0
 κ = 0.5
 z = 1.2
@@ -15,7 +15,7 @@ println("Quantity Produced: ", q)
 println("Task Thresholds: ", xT)
 println("Approximation error: ", fval)
 # Call unitInputDemand and print the output
-labor_input2 = q*unitInputDemand( xT, θ, κ, z, αVec)
+labor_input2 = unitInputDemand( xT, q, θ, κ, z, αVec)
 println("Labor Demand: ", labor_input2)
 println("Error", labor_input2-labor_input)
 
@@ -24,6 +24,8 @@ MPL= margProdLabor(labor_input,  θ, κ, z, αVec)
 println("Marginal Products of Labor (with labor demand): ",MPL)
 
 MPL= margProdLabor(labor_input,  θ, κ, z, αVec, xT)
+println("Marginal Products of Labor (with labor demand): ",MPL)
+MPL= margProdLabor(nothing, θ, κ, z, αVec)
 println("Marginal Products of Labor (with labor demand): ",MPL)
 
 # Call elasticity_substitution with labor demand, MPL, xT and parameters of the gamma function
@@ -43,7 +45,7 @@ e_h = [e_h1, e_h2, e_h3]  # Example e_h functions
 initial_guess_gen=find_initial_guess_gen(z, b_g, e_h; threshold=1e-2, verbose=false)
 q_gen, xT_gen,fval= prod_fun_general(labor_input,z,b_g, e_h; initial_guess=initial_guess_gen)
 
-labor_input_general =q_gen* unitInputDemand_general(xT_gen, z, b_g, e_h)
+labor_input_general = unitInputDemand_general(xT_gen, q_gen, z, b_g, e_h)
 println("Labor Demand: ", labor_input_general)
 isapprox(labor_input, labor_input_general, atol=1e-6)
 

@@ -29,7 +29,7 @@ println("Task Thresholds: ", xT)
 println("Approximation error: ", fval)
 
 # Call unitInputDemand and print the output
-labor_input2 = q * unitInputDemand(xT, θ, κ, z, αVec)
+labor_input2 =  unitInputDemand(xT, q, θ, κ, z, αVec)
 println("Labor Demand: ", labor_input2)
 println("Error: ", labor_input2 - labor_input)
 
@@ -39,6 +39,9 @@ println("Marginal Products of Labor (with labor demand): ", MPL)
 
 MPL = margProdLabor(labor_input, θ, κ, z, αVec, xT)
 println("Marginal Products of Labor (with labor demand): ", MPL)
+
+MPL = margProdLabor(nothing, θ, κ, z, αVec, xT, q)
+println("Marginal Products of Labor (with xT and q): ", MPL)
 
 # Call elasticity_sub_comp with labor demand, MPL, xT, and parameters of the gamma function
 ϵ_sub, ϵ_compl = elasticity_sub_comp(labor_input, θ, κ, z, αVec, MPL, xT)
@@ -60,7 +63,7 @@ e_h = [e_h1, e_h2, e_h3]  # Example e_h functions
 initial_guess_gen = find_initial_guess_gen(z, b_g, e_h; threshold=1e-2, verbose=false)
 q_gen, xT_gen, fval = prod_fun_general(labor_input, z, b_g, e_h; initial_guess=initial_guess_gen)
 
-labor_input_general = q_gen * unitInputDemand_general(xT_gen, z, b_g, e_h)
+labor_input_general = unitInputDemand_general(xT_gen, q_gen, z, b_g, e_h)
 println("Labor Demand: ", labor_input_general)
 println("Is approximation close? ", isapprox(labor_input, labor_input_general, atol=1e-6))
 

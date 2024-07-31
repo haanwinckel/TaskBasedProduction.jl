@@ -11,6 +11,7 @@ over the intervals defined by the thresholds in `xT`.
 
 # Arguments
 - `xT`: A vector of H-1 thresholds in task space.
+- `q`: Production value
 - `z`: Productivity value.
 - `b_g`: A density function for the task distribution.
 - `e_h`: A vector of H functions representing the cost of each labor type as a function of task complexity.
@@ -18,7 +19,7 @@ over the intervals defined by the thresholds in `xT`.
 # Returns
 - A vector representing the labor demand for each labor type.
 """
-function unitInputDemand_general(xT::Vector{Float64}, z::Real, b_g:: Function, e_h::Vector{Function})
+function unitInputDemand_general(xT::Vector{Float64}, q:: Real, z::Real, b_g:: Function, e_h::Vector{Function})
     H = length(xT) + 1
     xT = [0.0; xT; Inf]  # Adding 0 and infinity to thresholds
     labor_input = zeros(H)
@@ -32,7 +33,7 @@ function unitInputDemand_general(xT::Vector{Float64}, z::Real, b_g:: Function, e
         labor_input[h], _ = quadgk(x -> b_g(x) / (z*e_h[h](x)), xT[h], xT[h+1])
     end
 
-    return labor_input
+    return q*labor_input
 end
 
 

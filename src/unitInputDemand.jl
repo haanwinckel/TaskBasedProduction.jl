@@ -5,6 +5,7 @@ Calculates unit labor demands given blueprint scale `θ`, blueprint shape `κ`, 
 
 # Arguments
 - `xT`: An array of H-1 thresholds in task space.
+- `q`: Quantity produced 
 - `θ`: Blueprint scale parameter.
 - `κ`: Blueprint shape parameter.
 - `z`: Productivity parameter.
@@ -14,7 +15,7 @@ Calculates unit labor demands given blueprint scale `θ`, blueprint shape `κ`, 
 # Returns
 - An array representing the labor demand for each labor type.
 """
-function unitInputDemand(xT::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real},  skipParamChecks::Bool = false)
+function unitInputDemand(xT::AbstractArray{<:Real}, q:: Real, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real},  skipParamChecks::Bool = false)
     
     if !skipParamChecks
         @assert θ > 0
@@ -38,6 +39,6 @@ function unitInputDemand(xT::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real,
             labor_input[h] = component_negative_ups(Υ, κ, xT[h], xT[h+1])
         end
     end
-    labor_input = labor_input ./ (z * θ^κ)
+    labor_input = q*labor_input ./ (z * θ^κ)
 end
 

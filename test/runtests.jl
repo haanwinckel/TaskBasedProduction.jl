@@ -16,7 +16,7 @@ function run_tests(labor_input::Vector{Float64})
 
     # Test for unitInputDemand
     @testset "unitInputDemand Tests" begin
-        labor_input2 = q * unitInputDemand(xT, θ, κ, z, αVec)
+        labor_input2 = unitInputDemand(xT, q, θ, κ, z, αVec)
         @test isapprox(labor_input, labor_input2, atol=1e-5)
     end
 
@@ -25,6 +25,12 @@ function run_tests(labor_input::Vector{Float64})
         MPL2 = margProdLabor(labor_input, θ, κ, z, αVec, xT)
         @test isapprox(MPL, MPL2, atol=1e-5)
     end
+    # Test for MPL function 2
+    @testset "MPL function" begin
+        MPL2 = margProdLabor(nothing, θ, κ, z, αVec, xT, q)
+        @test isapprox(MPL, MPL2, atol=1e-5)
+    end
+
 
     # Numerical comparison for MPL
     @testset "MPL numerical comparison" begin
@@ -49,7 +55,7 @@ function run_tests(labor_input::Vector{Float64})
     e_h = [e_h1, e_h2, e_h3]  # Example e_h functions
     initial_guess_gen = find_initial_guess_gen(z, b_g, e_h; threshold=1e-2, verbose=false)
     q_gen, xT_gen, fval = prod_fun_general(labor_input, z, b_g, e_h; initial_guess=initial_guess_gen)
-    labor_input_general = q_gen * unitInputDemand_general(xT_gen, z, b_g, e_h)
+    labor_input_general =  unitInputDemand_general(xT_gen, q_gen, z, b_g, e_h)
     MPL_gen = margProdLabor_general(labor_input_general, z, b_g, e_h, xT_gen, q_gen)
     ϵ_sub_gen, ϵ_compl_gen = elasticity_sub_comp_general(labor_input_general, z, b_g, e_h, MPL_gen, xT_gen)
 

@@ -17,8 +17,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/haanwinckel/TaskBasedProduction",
-    branch = "gh-pages",  # The branch to deploy to
-    devbranch = "main",   # The development branch
-    target = "docs"       # The directory to deploy to
+    repo = "github.com/haanwinckel/TaskBasedProduction"
 )
