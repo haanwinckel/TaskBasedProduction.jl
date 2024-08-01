@@ -45,7 +45,8 @@ function find_initial_guess(θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:
         while any(imp_l .< threshold) && iteration < max_iterations
             try
                 imp_xT = cumsum(exp.(xT[1:end]))
-                imp_l = exp(initial_q) * unitInputDemand(imp_xT, θ, κ, z, αVec, true)
+                imp_q=exp(initial_q)
+                imp_l = unitInputDemand(imp_xT, imp_q, θ, κ, z, αVec, true)
             catch
                 # If there's an error, generate new initial xT values from scratch
                 xT = generate_initial_xT()

@@ -4,7 +4,7 @@
 Generate an initial guess for the optimization problem using a general density function such that the implied labor demand is non-trivial.
 
 # Arguments
-- `labor_input::AbstractArray{<:Real}`: The observed labor input for each task.
+- `labor_input::AbstractArray{<:Real}`: An array of labor demand values. If `nothing`, it will be computed internally (given xT and q).
 - `z::Real`: A scaling factor for the labor input.
 - `αVec::AbstractArray{<:Real}`: An array of task-specific parameters.
 - `pdf::Function`: The general density function.
@@ -79,7 +79,8 @@ function find_initial_guess_gen(z::Real, b_g::Function, e_h::Vector{Function}; t
         while any(imp_l .< threshold) && iteration < max_iterations
             try
                 imp_xT = cumsum(exp.(xT[1:end]))
-                imp_l = exp(initial_q) * unitInputDemand_general(imp_xT, z, b_g, e_h)
+                imp_q=exp(initial_q)
+                imp_l = unitInputDemand_general(imp_xT, imp_q, z, b_g, e_h)
             catch
                 # If there's an error, generate new initial xT values from scratch
                 xT = generate_initial_xT()

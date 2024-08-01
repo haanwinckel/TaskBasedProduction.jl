@@ -1,4 +1,5 @@
 using TaskBasedProduction 
+using Revise
 θ = 1.0
 κ = 0.5
 z = 1.2
@@ -22,11 +23,15 @@ println("Marginal Products of Labor (with labor demand): ",MPL)
 
 MPL= margProdLabor(labor_input,  θ, κ, z, αVec, xT)
 println("Marginal Products of Labor (with labor demand): ",MPL)
-MPL= margProdLabor(nothing, θ, κ, z, αVec)
+MPL= margProdLabor(nothing, θ, κ, z, αVec, xT, q)
 println("Marginal Products of Labor (with labor demand): ",MPL)
 
 # Call elasticity_substitution with labor demand, MPL, xT and parameters of the gamma function
 ϵ_sub, ϵ_compl=elasticity_sub_comp(labor_input, θ, κ, z, αVec, MPL, xT)
+println("Allen partial elasticity of substitution:", ϵ_sub)
+println("Hicks partial elasticity of substitution:", ϵ_compl)
+# Call elasticity_substitution with labor demand, MPL, xT and parameters of the gamma function
+ϵ_sub, ϵ_compl=elasticity_sub_comp(labor_input, θ, κ, z, αVec, MPL, xT, q)
 println("Allen partial elasticity of substitution:", ϵ_sub)
 println("Hicks partial elasticity of substitution:", ϵ_compl)
 
@@ -51,7 +56,6 @@ isapprox(labor_input, labor_input_general, atol=1e-6)
 println("Quantity Produced: ", q_gen)
 println("Task Thresholds: ", xT_gen)
 MPL_gen=margProdLabor_general(labor_input_general, z, b_g, e_h, xT_gen, q_gen)
-ϵ_sub_gen, ϵ_compl_gen=elasticity_sub_comp_general(labor_input_general, z, b_g, e_h, MPL_gen, xT_gen)
-
+ϵ_sub_gen, ϵ_compl_gen=elasticity_sub_comp_general(nothing, z, b_g, e_h, MPL_gen, xT_gen, q_gen)
 
 

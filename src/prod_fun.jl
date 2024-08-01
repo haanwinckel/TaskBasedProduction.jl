@@ -35,7 +35,7 @@ function prod_fun(
     function residuals(x::AbstractVector)
         imp_q = exp(x[1])
         imp_xT = cumsum(exp.(x[2:end]))
-        imp_l = imp_q * unitInputDemand(imp_xT, θ, κ, z, αVec, true)
+        imp_l = unitInputDemand(imp_xT, imp_q , θ, κ, z, αVec, true)
         err = log.(imp_l ./ labor_input)
         return err  # Return the error vector for least squares optimization
     end

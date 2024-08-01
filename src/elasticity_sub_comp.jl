@@ -1,30 +1,42 @@
 """
-    elasticity_sub_comp(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; MPL=nothing, xT=nothing) -> (AbstractArray{<:Real}, AbstractArray{<:Real})
+    elasticity_sub_comp(labor_input::Union{AbstractArray{<:Real}, Nothing}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; MPL=nothing, xT=nothing, q=nothing) -> (AbstractArray{<:Real}, AbstractArray{<:Real})
 
 Calculates the elasticity of substitution and complementarity for a given set of parameters.
 
 # Arguments
-- `labor_input`: An array of labor inputs of different types with H elements.
+- `labor_input`: An array of labor inputs of different types with H elements. If `nothing`, it will be computed internally given xT and q.
 - `θ`: Blueprint scale parameter.
 - `κ`: Blueprint shape parameter.
 - `z`: Productivity parameter.
 - `αVec`: An array of comparative advantage values with H elements.
 - `MPL`: (optional) An array representing the marginal productivity of labor. If not provided, it will be computed within the function.
 - `xT`: (optional) An array representing precomputed task thresholds. If not provided, it will be computed within the function.
-
+- `q`: (optional) A scalar representing total production. If not provided, it will be computed within the function.
 # Returns
 - `ϵ_h_sub`: Matrix of elasticity of substitution values for each worker type h (rows) relative to worker type h_prime (columns).
 - `ϵ_h_compl`: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
 """
-function elasticity_sub_comp(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}, MPL=nothing, xT=nothing)
-    if xT === nothing
+function elasticity_sub_comp(
+    labor_input::Union{AbstractArray{<:Real}, Nothing},
+    θ::Real,
+    κ::Real,
+    z::Real,
+    αVec::AbstractArray{<:Real},
+    MPL=nothing,
+    xT=nothing, 
+    q=nothing)
+
+    if xT === nothing || q===nothing
         q, xT = prod_fun(labor_input, θ, κ, z, αVec)
-    else
-        q, _ = prod_fun(labor_input, θ, κ, z, αVec)  # Recompute q with the given xT
     end
 
     if MPL === nothing
         MPL = margProdLabor(labor_input, θ, κ, z, αVec)
+    end
+
+    # Compute labor_input if it's not provided
+    if labor_input === nothing
+        labor_input =  unitInputDemand(xT, q, θ, κ, z, αVec)
     end
 
     H = length(αVec)
@@ -69,4 +81,3 @@ function elasticity_sub_comp(labor_input::AbstractArray{<:Real}, θ::Real, κ::R
 
     return ϵ_h_sub, ϵ_h_compl
 end
-

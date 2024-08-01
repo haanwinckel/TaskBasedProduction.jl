@@ -12,7 +12,7 @@ function run_tests(labor_input::Vector{Float64})
     initial_guess = find_initial_guess(θ, κ, z, αVec; threshold=1e-2)
     q, xT, fval = prod_fun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess, x_tol=1e-10)
     MPL = margProdLabor(labor_input, θ, κ, z, αVec)
-    ϵ_sub, ϵ_compl = elasticity_sub_comp(labor_input, θ, κ, z, αVec, MPL, xT)
+    ϵ_sub, ϵ_compl = elasticity_sub_comp(labor_input, θ, κ, z, αVec, MPL, xT, q)
 
     # Test for unitInputDemand
     @testset "unitInputDemand Tests" begin
@@ -57,7 +57,7 @@ function run_tests(labor_input::Vector{Float64})
     q_gen, xT_gen, fval = prod_fun_general(labor_input, z, b_g, e_h; initial_guess=initial_guess_gen)
     labor_input_general =  unitInputDemand_general(xT_gen, q_gen, z, b_g, e_h)
     MPL_gen = margProdLabor_general(labor_input_general, z, b_g, e_h, xT_gen, q_gen)
-    ϵ_sub_gen, ϵ_compl_gen = elasticity_sub_comp_general(labor_input_general, z, b_g, e_h, MPL_gen, xT_gen)
+    ϵ_sub_gen, ϵ_compl_gen = elasticity_sub_comp_general(labor_input_general, z, b_g, e_h, MPL_gen, xT_gen, q_gen)
 
     @testset "prod_fun_general comparison test" begin
         @test isapprox(q_gen, q, atol=1e-5)
@@ -83,7 +83,7 @@ function run_tests(labor_input::Vector{Float64})
     @testset "Invalid density" begin
         # Test to check if an error is thrown when b_g is not a valid density function
         b_g_invalid = x -> 4 * exp(-x)  # This does not integrate to 1 over the entire domain
-        @test_throws ErrorException unitInputDemand_general(xT_gen, z, b_g_invalid, e_h)
+        @test_throws ErrorException unitInputDemand_general(xT_gen, q_gen, z, b_g_invalid, e_h)
     end
 
     @testset "Numerical Elasticity of complementarity" begin
