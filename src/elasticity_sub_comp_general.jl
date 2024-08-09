@@ -17,6 +17,13 @@ Calculates the elasticity of substitution and complementarity for a given set of
 - `ϵ_h_compl`: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
 """
 function elasticity_sub_comp_general(labor_input::Union{AbstractArray{<:Real}, Nothing}, z::Real, b_g::Function, e_h::Vector{Function}, MPL=nothing, xT=nothing, q=nothing)
+    
+    # If labor_input is missing, calculate it using unitInputDemand
+    if labor_input === nothing
+        labor_input = unitInputDemand_general(xT, q, z, b_g, e_h)
+        MPL = margProdLabor_general(labor_input, z, b_g, e_h)
+    end
+    
     if xT === nothing || q===nothing
         initial_guess=find_initial_guess_gen(z, b_g, e_h; threshold=1e-2, verbose=false)
         q, xT,fval= prod_fun_general(labor_input,z,b_g, e_h; initial_guess=initial_guess)
@@ -26,10 +33,7 @@ function elasticity_sub_comp_general(labor_input::Union{AbstractArray{<:Real}, N
         MPL = margProdLabor_general(labor_input, z, b_g, e_h)
     end
 
-    # If labor_input is missing, calculate it using unitInputDemand
-    if labor_input === nothing
-        labor_input = unitInputDemand_general(xT, q, z, b_g, e_h)
-    end
+    
 
     H = length(labor_input)
     ρ_h = zeros(Float64, H)

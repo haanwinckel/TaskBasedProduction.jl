@@ -75,6 +75,202 @@ MPL_gen = margProdLabor_general(labor_input_general, z, b_g, e_h, xT_gen, q_gen)
 println("General case Allen partial elasticity of substitution: ", ϵ_sub_gen)
 println("General case Hicks partial elasticity of substitution: ", ϵ_compl_gen)
 ```
+
+## Use Cases
+This package provides models and functions for analyzing labor markets, task thresholds, and elasticity in both competitive and monopsonistic settings.
+
+## Parameterization
+
+### Functional Forms
+
+```julia
+θ = 1.0
+κ = 0.5
+z = 1.2
+αVec = [0.1, 0.2, 0.3]
+using SpecialFunctions 
+b_g(x) = (x^(κ - 1) * exp(-x / θ)) / (θ^κ * gamma(κ)) # Gamma PDF with the same parameterization as above for comparability
+e_h1(x)=exp(0.1*x)
+e_h2(x)=exp(0.2*x)
+e_h3(x)=exp(0.3*x)
+e_h = [e_h1, e_h2, e_h3]  
+```
+
+
+## 1) Competitive labor market
+In a competitive labor market, wages are taken as given and must equate the marginal product of labor. Optimality requires that marginal product ratios equal wage ratios, a relation that is used to obtain the task thresholds xT. Once the task thresholds are known, the function unitInputDemand is used to obtain the labor per output, setting q = 1. 
+# Competitive labor market with functional forms
+```julia
+q = 1
+wage = [0.1; 0.2; 0.7]
+
+# Compute thresholds xT suing the functional form 
+diff_alpha = diff(αVec)
+log_wage_ratios = log.(wage[2:end] ./ wage[1:end-1])
+xT = (1 ./ diff_alpha) .* log_wage_ratios
+
+# Calculate labor unit input requirements
+labor_input_1 = unitInputDemand(xT, q, θ, κ, z, αVec)
+```
+
+# Competitive labor market with general functions 
+
+```julia
+# Objective function for optimization
+function objective(x, h)
+    x=x[1]
+    return (e_h[h+1](x) / e_h[h](x) - wage[h+1] / wage[h])^2
+end
+
+# Find the solutions for xT_h
+H=length(wage)
+xT = Vector{Float64}(undef, H-1)
+# Initial guess: recall that the first element is q
+initial_guess=find_initial_guess_gen(z, b_g, e_h)
+for h in 1:H-1
+     x0=[initial_guess[h+1]]
+    # Perform the optimization
+    res = optimize(x ->objective(x, h), x0, LevenbergMarquardt())
+    # Extract the optimized value
+    xT[h]=res.minimizer[1]
+end
+
+labor_input_2 = unitInputDemand_general(xT, q, z, b_g, e_h)
+```
+
+## 2) Given labor input, use the production function to obtain total production and task thresholds
+If labor inputs per each type are known, they can be given to the function prod_fun or prod_fun_general to compute the task thresholds and the total output produced.
+### With functional forms
+```julia
+labor_input=[0.5; 0.04; 0.19;;]
+initial_guess=find_initial_guess(θ, κ, z, αVec; threshold=1e-2)
+q, xT = prod_fun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess)
+```
+### With general parameterization
+``` julia
+
+#  General parameterization
+initial_guess=find_initial_guess_gen(z, b_g, e_h)
+q, xT=prod_fun_general(labor_input,z,b_g, e_h; initial_guess=initial_guess)
+```
+
+## 3)  Elasticity of complementarity and substitution
+Use the function elasticity_sub_comp to obtain the elasticities of substitution and complementarity. Precompiled values for marginal products (MPL), task thresholds (xT), and total output (q) can be used for efficiency, but they are computed within the function if not provided.
+
+### With labor demand given
+```julia 
+# Call elasticity_substitution with labor demand given
+ϵ_sub, ϵ_compl=elasticity_sub_comp(labor_input, θ, κ, z, αVec)
+```
+### With Task Thresholds and Total Output
+```julia 
+# Call elasticity_substitution with labor demand given
+ϵ_sub, ϵ_compl=elasticity_sub_comp(nothing, θ, κ, z, αVec, MPL, xT, q)
+```
+### General Case with Density Function b_h and Efficiency Functions e_h
+```julia
+# General case
+ϵ_sub_gen, ϵ_compl_gen=elasticity_sub_comp_general(labor_input, z, b_g, e_h)
+```
+## 4) Problem of the firm in a monopsonistic labor market:
+First, define the parameter governing the elasticity of labor supply:
+``` julia
+β=4
+```
+Then define general equilibrium objects (total labor supply and inclusive value) and the price of the good sold by the firm:
+``` julia
+# Define general equilibrium objects
+L=[1 ; 1 ; 1] # Total labor force 
+p=1  # Price for the good
+w_inclusive=[0.4; 0.9; 2]  # Inclusive value of wages 
+``` 
+Define an objective function that will be minimized to find the solution in total output (q) and task thresholds (xT). This function takes a guess for q and xT as input, computes the labor input required by the guess, and the marginal product of labor. It then computes the wage as a constant markdown applied to the marginal product of labor and the implied labor supply given the firm wage. Finally, the function returns an error that is the discrepancy from the labor supply to the labor required implied by the guess xT and q.
+
+```  julia
+# Define the objective function for optimization derived from the firm problem 
+function objective_to_minimize(initial_guess)
+    # Compute q and xT from the initial guess
+    q = exp(initial_guess[1])
+    xT = cumsum(exp.(initial_guess[2:end]))
+    
+    # Calculate labor input demand
+    labor_input = unitInputDemand(xT, q, θ, κ, z, αVec)
+    
+    # Calculate MPL
+    MPL = margProdLabor(labor_input, θ, κ, z, αVec, xT)
+    
+    # Calculate wages
+    w = p * (β / (β + 1)) * MPL
+    
+    # Calculate labor supply
+    labor_supply = (w ./ w_inclusive) .^ β .* L
+    
+    # Calculate error
+    err = log.(labor_input ./ labor_supply)
+    
+    # Objective to minimize: sum of squared errors
+    return sum(err .^ 2)
+end
+``` 
+To obtain the result, first a good initial guess is obtained and then the above function is minimized.
+
+``` julia
+
+# Initial guess
+initial_guess = find_initial_guess(θ, κ, z, αVec; threshold=1e-2)
+using LeastSquaresOptim
+result = optimize(objective_to_minimize, initial_guess, LevenbergMarquardt())
+
+# Extract results
+optimal_initial_guess = result.minimizer
+q_opt = exp(optimal_initial_guess[1])
+xT_opt = cumsum(exp.(optimal_initial_guess[2:end]))
+
+# Print results
+println("Optimal q: ", q_opt)
+println("Optimal xT: ", xT_opt)
+``` 
+### General Blueprint Functions and Efficiency Functions
+The logic is the same as above but applied to general functions:
+```  julia
+# Same thing but with the general functions
+function objective_to_minimize(initial_guess)
+    # Compute q and xT from the initial guess
+    q = exp(initial_guess[1])
+    xT = cumsum(exp.(initial_guess[2:end]))
+    
+    # Calculate labor input demand
+    labor_input = unitInputDemand_general(xT, q, z, b_g, e_h)
+    
+    # Calculate MPL
+    MPL= margProdLabor_general(labor_input, z, b_g, e_h, xT, q)
+    
+    # Calculate wages
+    w = p * (β / (β + 1)) * MPL
+    
+    # Calculate labor supply
+    labor_supply = (w ./ w_inclusive) .^ β .* L
+    
+    # Calculate error
+    err = log.(labor_input ./ labor_supply)
+    
+    # Objective to minimize: sum of squared errors
+    return sum(err .^ 2)
+end
+
+using LeastSquaresOptim
+result = optimize(objective_to_minimize, initial_guess, LevenbergMarquardt())
+
+# Extract results
+optimal_initial_guess = result.minimizer
+q_opt = exp(optimal_initial_guess[1])
+xT_opt = cumsum(exp.(optimal_initial_guess[2:end]))
+
+# Print results
+println("Optimal q: ", q_opt)
+println("Optimal xT: ", xT_opt)
+```
+s
 ## Functions and Features
 # 1) **unitInputDemand**
 Calculates unit labor demands given blueprint scale `θ`, blueprint shape `κ`, productivity `z`, an array of comparative advantage values `αVec` with H elements (one for each worker type), and an array `xT` of H-1 thresholds in task space.

@@ -16,7 +16,6 @@ Inputs:
 Returns:
 - `q`: Quantity produced.
 - `xT`: Array of task thresholds.
-- `fval`: Final value of the objective function.
 """
 function prod_fun(
     labor_input::AbstractArray{<:Real}, 
@@ -48,10 +47,10 @@ function prod_fun(
             x_opt = result.minimizer
             fval = maximum(abs.(residuals(x_opt)))
 
-            if fval <= 1e-8
+            if fval <= f_tol
                 q = exp(x_opt[1])
                 xT = cumsum(exp.(x_opt[2:end]))
-                return q, xT, fval
+                return q, xT
             else
                 throw(ErrorException("prod_fun: could not find optimal allocation."))
             end

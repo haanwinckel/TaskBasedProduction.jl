@@ -26,6 +26,13 @@ function elasticity_sub_comp(
     xT=nothing, 
     q=nothing)
 
+    
+    # Compute labor_input if it's not provided
+    if labor_input === nothing
+        labor_input =  unitInputDemand(xT, q, θ, κ, z, αVec)
+        MPL = margProdLabor(labor_input, θ, κ, z, αVec)
+    end
+    
     if xT === nothing || q===nothing
         q, xT = prod_fun(labor_input, θ, κ, z, αVec)
     end
@@ -34,10 +41,7 @@ function elasticity_sub_comp(
         MPL = margProdLabor(labor_input, θ, κ, z, αVec)
     end
 
-    # Compute labor_input if it's not provided
-    if labor_input === nothing
-        labor_input =  unitInputDemand(xT, q, θ, κ, z, αVec)
-    end
+    
 
     H = length(αVec)
     ρ_h = zeros(Float64, H)

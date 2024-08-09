@@ -18,7 +18,6 @@ Inputs:
 Returns:
 - `q`: Quantity produced.
 - `xT`: Array of task thresholds.
-- `fval`: Final value of the objective function.
 """
 function prod_fun_general(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}; 
     initial_guess=zeros(length(labor_input)), x_tol=1e-12, f_tol=1e-12, g_tol=1e-12, iterations=1000, max_retries=5)
@@ -39,10 +38,10 @@ function prod_fun_general(labor_input::AbstractArray{<:Real}, z::Real, b_g::Func
             x_opt = result.minimizer
             fval = maximum(abs.(objFun(x_opt)))
 
-            if fval <= 1e-6
+            if fval <= f_tol
                 q = exp(x_opt[1])
                 xT = cumsum(exp.(x_opt[2:end]))
-                return q, xT, fval
+                return q, xT
             else
                 throw(ErrorException("prod_fun_general: could not find optimal allocation."))
             end

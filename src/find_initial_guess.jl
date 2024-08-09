@@ -24,7 +24,7 @@ If the implied labor demand for any task is below the threshold, the `xT` values
 
 If the adjustment process encounters an error, new `xT` values are generated from scratch.
 """
-function find_initial_guess(θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; threshold::Real=1e-1)
+function find_initial_guess(θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; threshold::Real=1e-2)
     H = length(αVec)  # Number of tasks
     # Initial guess for q is fixed at 1
     initial_q = 0.0  # log(1) is 0
