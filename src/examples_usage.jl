@@ -11,7 +11,6 @@ q, xT = prod_fun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess,  x_
 
 println("Quantity Produced: ", q)
 println("Task Thresholds: ", xT)
-println("Approximation error: ", fval)
 # Call unitInputDemand and print the output
 labor_input2 = unitInputDemand( xT, q, θ, κ, z, αVec)
 println("Labor Demand: ", labor_input2)

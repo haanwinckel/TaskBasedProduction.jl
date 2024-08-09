@@ -22,11 +22,11 @@ z = 1.2
 labor_input = [0.5; 0.04; 0.19]
 
 initial_guess = find_initial_guess(θ, κ, z, αVec; threshold=1e-2)
-q, xT, fval = prod_fun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess, x_tol=1e-10)
+q, xT= prod_fun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess, x_tol=1e-10)
 
 println("Quantity Produced: ", q)
 println("Task Thresholds: ", xT)
-println("Approximation error: ", fval)
+
 
 # Call unitInputDemand and print the output
 labor_input2 =  unitInputDemand(xT, q, θ, κ, z, αVec)
@@ -61,7 +61,7 @@ e_h3(x) = exp(0.3*x)
 e_h = [e_h1, e_h2, e_h3]  # Example e_h functions
 
 initial_guess_gen = find_initial_guess_gen(z, b_g, e_h; threshold=1e-2, verbose=false)
-q_gen, xT_gen, fval = prod_fun_general(labor_input, z, b_g, e_h; initial_guess=initial_guess_gen)
+q_gen, xT_gen = prod_fun_general(labor_input, z, b_g, e_h; initial_guess=initial_guess_gen)
 
 labor_input_general = unitInputDemand_general(xT_gen, q_gen, z, b_g, e_h)
 println("Labor Demand: ", labor_input_general)
@@ -270,7 +270,7 @@ xT_opt = cumsum(exp.(optimal_initial_guess[2:end]))
 println("Optimal q: ", q_opt)
 println("Optimal xT: ", xT_opt)
 ```
-s
+
 ## Functions and Features
 # 1) **unitInputDemand**
 Calculates unit labor demands given blueprint scale `θ`, blueprint shape `κ`, productivity `z`, an array of comparative advantage values `αVec` with H elements (one for each worker type), and an array `xT` of H-1 thresholds in task space.
@@ -321,7 +321,6 @@ Inputs:
 Returns:
 - `q`: Quantity produced.
 - `xT`: Array of task thresholds.
-- `fval`: Final value of the objective function.
 
 ``` julia
     prod_fun(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; initial_guess=nothing, optim_options=nothing)
@@ -406,7 +405,6 @@ Inputs:
 Returns:
 - `q`: Quantity produced.
 - `xT`: Array of task thresholds.
-- `fval`: Final value of the objective function.
 
 ``` julia
     prod_fun_general(labor_input::AbstractArray{<:Real}, z::Real, b_g:: Function, e_h::Vector{Function}; initial_guess=nothing, x_tol=1e-12, f_tol=1e-12, g_tol=1e-12, iterations=1000, max_retries=5)
