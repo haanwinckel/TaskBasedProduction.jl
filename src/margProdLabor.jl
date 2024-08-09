@@ -27,7 +27,7 @@ function margProdLabor(
     q=nothing)
     # Calculate q and xT if they are not provided
     if xT === nothing || q === nothing
-        q, xT, _ = prod_fun(labor_input, θ, κ, z, αVec)
+        q, xT = prod_fun(labor_input, θ, κ, z, αVec)
     end
     
     # If labor_input is missing, calculate it using unitInputDemand
