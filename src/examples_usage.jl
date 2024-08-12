@@ -34,7 +34,7 @@ println("Hicks partial elasticity of substitution:", ϵ_compl)
 
 # Define the density function b_g(x)
 using SpecialFunctions # Note: this package is needed only to compare the output of the general parameterization with the output of the Gamma parameterization. It is used in the next line to obtain the PDF of a Gamma distribution.
-
+using LeastSquaresOptim # Package needed for optimization
 b_g(x) = (x^(κ - 1) * exp(-x / θ)) / (θ^κ * gamma(κ)) # Gamma PDF with the same parameterization as above for comparability
 e_h1(x)=exp(0.1*x)
 e_h2(x)=exp(0.2*x)
@@ -130,12 +130,8 @@ function objective_to_minimize(initial_guess)
     
     # Calculate labor supply
     labor_supply = (w ./ w_inclusive) .^ β .* L
-    
-    # Calculate error
-    err = log.(labor_input ./ labor_supply)
-    
     # Objective to minimize: sum of squared errors
-    return sum(err .^ 2)
+    return log.(labor_input ./ labor_supply)
 end
 
 # Initial guess
@@ -169,12 +165,9 @@ function objective_to_minimize(initial_guess)
     
     # Calculate labor supply
     labor_supply = (w ./ w_inclusive) .^ β .* L
-    
-    # Calculate error
-    err = log.(labor_input ./ labor_supply)
-    
+ 
     # Objective to minimize: sum of squared errors
-    return sum(err .^ 2)
+    return log.(labor_input ./ labor_supply)
 end
 
 using LeastSquaresOptim

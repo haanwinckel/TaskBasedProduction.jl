@@ -26,7 +26,7 @@ function elasticity_sub_comp_general(labor_input::Union{AbstractArray{<:Real}, N
     
     if xT === nothing || q===nothing
         initial_guess=find_initial_guess_gen(z, b_g, e_h; threshold=1e-2, verbose=false)
-        q, xT,fval= prod_fun_general(labor_input,z,b_g, e_h; initial_guess=initial_guess)
+        q, xT= prod_fun_general(labor_input,z,b_g, e_h; initial_guess=initial_guess)
     end
 
     if MPL === nothing

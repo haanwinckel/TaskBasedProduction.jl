@@ -94,6 +94,7 @@ e_h1(x)=exp(0.1*x)
 e_h2(x)=exp(0.2*x)
 e_h3(x)=exp(0.3*x)
 e_h = [e_h1, e_h2, e_h3]  
+using LeastSquaresOptim # Need also this package to solve optimizations
 ```
 
 
@@ -204,12 +205,9 @@ function objective_to_minimize(initial_guess)
     
     # Calculate labor supply
     labor_supply = (w ./ w_inclusive) .^ β .* L
-    
-    # Calculate error
-    err = log.(labor_input ./ labor_supply)
-    
+   
     # Objective to minimize: sum of squared errors
-    return sum(err .^ 2)
+    return log.(labor_input ./ labor_supply)
 end
 ``` 
 To obtain the result, first a good initial guess is obtained and then the above function is minimized.
@@ -250,12 +248,9 @@ function objective_to_minimize(initial_guess)
     
     # Calculate labor supply
     labor_supply = (w ./ w_inclusive) .^ β .* L
-    
-    # Calculate error
-    err = log.(labor_input ./ labor_supply)
-    
+
     # Objective to minimize: sum of squared errors
-    return sum(err .^ 2)
+    return log.(labor_input ./ labor_supply)
 end
 
 using LeastSquaresOptim
