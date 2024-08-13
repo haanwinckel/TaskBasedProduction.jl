@@ -1,5 +1,5 @@
 """
-    prod_fun_general(labor_input::AbstractArray{<:Real}, z::Real, b_g:: Function, e_h::Vector{Function}; initial_guess=nothing, x_tol=1e-12, f_tol=1e-12, g_tol=1e-12, iterations=1000, max_retries=5)
+    prodFunGeneral(labor_input::AbstractArray{<:Real}, z::Real, b_g:: Function, e_h::Vector{Function}; initial_guess=nothing, x_tol=1e-12, f_tol=1e-12, g_tol=1e-12, iterations=1000, max_retries=5)
 
 Calculates the quantity produced (q), and task thresholds (xT) given labor inputs (labor_input), productivity z, general blueprint density function (b_g), and a vector of efficiency functions (e_h), one for each labor type.
 
@@ -19,13 +19,13 @@ Returns:
 - `q`: Quantity produced.
 - `xT`: Array of task thresholds.
 """
-function prod_fun_general(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}; 
+function prodFunGeneral(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}; 
     initial_guess=zeros(length(labor_input)), x_tol=1e-12, f_tol=1e-12, g_tol=1e-12, iterations=1000, max_retries=5)
 
     function objFun(x)
         imp_q = exp(x[1])
         imp_xT = cumsum(exp.(x[2:end]))
-        imp_l = unitInputDemand_general(imp_xT, imp_q, z, b_g, e_h)
+        imp_l = unitInputDemandGeneral(imp_xT, imp_q, z, b_g, e_h)
         err = log.(imp_l ./ labor_input)
         return err  # Return the error vector for least squares optimization
     end

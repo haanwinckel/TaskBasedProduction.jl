@@ -1,5 +1,5 @@
 """
-    find_initial_guess_gen(labor_input::AbstractArray{<:Real}, z::Real, αVec::AbstractArray{<:Real}, pdf::Function; threshold::Real=1e-2, verbose::Bool=false)
+    getStartGuessGen_xT(labor_input::AbstractArray{<:Real}, z::Real, αVec::AbstractArray{<:Real}, pdf::Function; threshold::Real=1e-2, verbose::Bool=false)
 
 Generate an initial guess for the optimization problem using a general density function such that the implied labor demand is non-trivial.
 
@@ -26,7 +26,7 @@ If the adjustment process encounters an error, new `xT` values are generated fro
 
 Verbose output can be enabled by setting the `verbose` parameter to `true`, which will print debug information during the percentile calculation.
 """
-function find_initial_guess_gen(z::Real, b_g::Function, e_h::Vector{Function}; threshold::Real=1e-2, verbose::Bool=false)
+function getStartGuessGen_xT(z::Real, b_g::Function, e_h::Vector{Function}; threshold::Real=1e-2, verbose::Bool=false)
     H = length(e_h)  # Number of labor types
     # Initial guess for q is fixed at 1
     initial_q = 0.0  # log(1) is 0
@@ -80,7 +80,7 @@ function find_initial_guess_gen(z::Real, b_g::Function, e_h::Vector{Function}; t
             try
                 imp_xT = cumsum(exp.(xT[1:end]))
                 imp_q=exp(initial_q)
-                imp_l = unitInputDemand_general(imp_xT, imp_q, z, b_g, e_h)
+                imp_l = unitInputDemandGeneral(imp_xT, imp_q, z, b_g, e_h)
             catch
                 # If there's an error, generate new initial xT values from scratch
                 xT = generate_initial_xT()

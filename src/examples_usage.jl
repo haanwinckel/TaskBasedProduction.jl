@@ -6,8 +6,8 @@ z = 1.2
 αVec = [0.1, 0.2, 0.3]
 labor_input=[0.5; 0.04; 0.19;;]
 
-initial_guess=find_initial_guess(θ, κ, z, αVec; threshold=1e-2)
-q, xT = prod_fun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess,  x_tol=1e-10)
+initial_guess=getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
+q, xT = prodFun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess)
 
 println("Quantity Produced: ", q)
 println("Task Thresholds: ", xT)
@@ -22,11 +22,11 @@ println("Marginal Products of Labor (with labor demand): ",MPL)
 
 
 # Call elasticity_substitution with labor demand, MPL, xT and parameters of the gamma function
-ϵ_sub, ϵ_compl=elasticity_sub_comp(labor_input, θ, κ, z, αVec, MPL, xT)
+ϵ_sub, ϵ_compl=elasticitySubComp(labor_input, θ, κ, z, αVec, MPL, xT)
 println("Allen partial elasticity of substitution:", ϵ_sub)
 println("Hicks partial elasticity of substitution:", ϵ_compl)
 # Call elasticity_substitution with labor demand, MPL, xT and parameters of the gamma function
-ϵ_sub, ϵ_compl=elasticity_sub_comp(labor_input, θ, κ, z, αVec, MPL, xT, q)
+ϵ_sub, ϵ_compl=elasticitySubComp(labor_input, θ, κ, z, αVec, MPL, xT, q)
 println("Allen partial elasticity of substitution:", ϵ_sub)
 println("Hicks partial elasticity of substitution:", ϵ_compl)
 
@@ -41,17 +41,18 @@ e_h2(x)=exp(0.2*x)
 e_h3(x)=exp(0.3*x)
 e_h = [e_h1, e_h2, e_h3]  # Example e_h functions
 
-initial_guess_gen=find_initial_guess_gen(z, b_g, e_h; threshold=1e-2, verbose=false)
-q_gen, xT_gen= prod_fun_general(labor_input,z,b_g, e_h; initial_guess=initial_guess_gen)
+initial_guess_gen=getStartGuessGen_xT(z, b_g, e_h; threshold=1e-2, verbose=false)
+initial_guess_gen=initial_guess
+q_gen, xT_gen= prodFunGeneral(labor_input,z,b_g, e_h; initial_guess=initial_guess_gen)
 
-labor_input_general = unitInputDemand_general(xT_gen, q_gen, z, b_g, e_h)
+labor_input_general = unitInputDemandGeneral(xT_gen, q_gen, z, b_g, e_h)
 println("Labor Demand: ", labor_input_general)
 isapprox(labor_input, labor_input_general, atol=1e-6)
 
 println("Quantity Produced: ", q_gen)
 println("Task Thresholds: ", xT_gen)
-MPL_gen=margProdLabor_general(labor_input_general, z, b_g, e_h, xT_gen, q_gen)
-ϵ_sub_gen, ϵ_compl_gen=elasticity_sub_comp_general(nothing, z, b_g, e_h, MPL_gen, xT_gen, q_gen)
+MPL_gen=margProdLaborGeneral(labor_input_general, z, b_g, e_h, xT_gen, q_gen)
+ϵ_sub_gen, ϵ_compl_gen=elasticitySubCompGeneral(nothing, z, b_g, e_h, MPL_gen, xT_gen, q_gen)
 
 ## Use case 1: competitive market with functional forms
 q = 1
@@ -76,7 +77,7 @@ end
 H=length(wage)
 xT = Vector{Float64}(undef, H-1)
 # Initial guess: recall that the first element is q
-initial_guess=find_initial_guess_gen(z, b_g, e_h)
+initial_guess=getStartGuessGen_xT(z, b_g, e_h)
 for h in 1:H-1
      x0=[initial_guess[h+1]]
     # Perform the optimization
@@ -85,22 +86,22 @@ for h in 1:H-1
     xT[h]=res.minimizer[1]
 end
 
-labor_input_2 = unitInputDemand_general(xT, q, z, b_g, e_h)
+labor_input_2 = unitInputDemandGeneral(xT, q, z, b_g, e_h)
 println("Labor Input: ", labor_input_2)
 # Use case 2: Given labor input, use the production function to obtain total production and task thresholds
 
 labor_input=[0.5; 0.04; 0.19;;]
-initial_guess=find_initial_guess(θ, κ, z, αVec; threshold=1e-2)
-q, xT = prod_fun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess)
+initial_guess=getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
+q, xT = prodFun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess)
 
 
 #  General parameterization
-initial_guess=find_initial_guess_gen(z, b_g, e_h)
-q, xT=prod_fun_general(labor_input,z,b_g, e_h; initial_guess=initial_guess)
+initial_guess=getStartGuessGen_xT(z, b_g, e_h)
+q, xT=prodFunGeneral(labor_input,z,b_g, e_h; initial_guess=initial_guess)
 
 # Use case 3: Calculate the elasticity of complementarity and substitution given labor inputs and total production and task thresholds
 # Call elasticity_substitution with labor demand given. 
-ϵ_sub, ϵ_compl=elasticity_sub_comp(labor_input, θ, κ, z, αVec)
+ϵ_sub, ϵ_compl=elasticitySubComp(labor_input, θ, κ, z, αVec)
 println("Allen partial elasticity of substitution:", ϵ_sub)
 println("Hicks partial elasticity of substitution:", ϵ_compl)
 
@@ -135,7 +136,7 @@ function objective_to_minimize(initial_guess)
 end
 
 # Initial guess
-initial_guess = find_initial_guess(θ, κ, z, αVec; threshold=1e-2)
+initial_guess = getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
 using LeastSquaresOptim
 result = optimize(objective_to_minimize, initial_guess, LevenbergMarquardt())
 
@@ -155,10 +156,10 @@ function objective_to_minimize(initial_guess)
     xT = cumsum(exp.(initial_guess[2:end]))
     
     # Calculate labor input demand
-    labor_input = unitInputDemand_general(xT, q, z, b_g, e_h)
+    labor_input = unitInputDemandGeneral(xT, q, z, b_g, e_h)
     
     # Calculate MPL
-    MPL= margProdLabor_general(labor_input, z, b_g, e_h, xT, q)
+    MPL= margProdLaborGeneral(labor_input, z, b_g, e_h, xT, q)
     
     # Calculate wages
     w = p * (β / (β + 1)) * MPL

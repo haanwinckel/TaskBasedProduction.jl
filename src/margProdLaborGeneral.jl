@@ -1,5 +1,5 @@
 """
-    margProdLabor_general(labor_input::Union{AbstractArray{<:Real}, Nothing}, z::Real, b_g::Function, e_h::Vector{Function}; xT=nothing, q=nothing) -> AbstractArray{<:Real}
+    margProdLaborGeneral(labor_input::Union{AbstractArray{<:Real}, Nothing}, z::Real, b_g::Function, e_h::Vector{Function}; xT=nothing, q=nothing) -> AbstractArray{<:Real}
 
 Calculates the marginal productivity of labor for each worker type given the input parameters.
 
@@ -16,7 +16,7 @@ Calculates the marginal productivity of labor for each worker type given the inp
 
 If `labor_input` is not provided, it will be computed using the `q` and `unitInputDemand_general` function based on the other parameters.
 """
-function margProdLabor_general(
+function margProdLaborGeneral(
     labor_input::Union{AbstractArray{<:Real}, Nothing},
     z::Real,
     b_g::Function,
@@ -25,12 +25,12 @@ function margProdLabor_general(
     q=nothing)
     # Calculate q and xT if they are not provided
     if xT === nothing || q === nothing
-        q, xT = prod_fun_general(labor_input, z, b_g, e_h)
+        q, xT = prodFunGeneral(labor_input, z, b_g, e_h)
     end
     
     # If labor_input is missing, calculate it
     if labor_input === nothing
-        labor_input = q * unitInputDemand_general(xT, q, z, b_g, e_h)
+        labor_input = q * unitInputDemandGeneral(xT, q, z, b_g, e_h)
     end
 
     H = length(e_h)

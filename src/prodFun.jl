@@ -1,5 +1,5 @@
 """
-    prod_fun(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; initial_guess=nothing, optim_options=nothing)
+    prodFun(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; initial_guess=nothing, optim_options=nothing)
 
 Calculates the quantity produced (q), and task thresholds (xT) given labor inputs (l), blueprint scale θ, blueprint shape κ, productivity z, and an array of 
 comparative advantage values αVec with H elements (one for each worker type).
@@ -17,7 +17,7 @@ Returns:
 - `q`: Quantity produced.
 - `xT`: Array of task thresholds.
 """
-function prod_fun(
+function prodFun(
     labor_input::AbstractArray{<:Real}, 
     θ::Real, 
     κ::Real, 

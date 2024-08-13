@@ -1,5 +1,5 @@
 """
-    find_initial_guess(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; threshold::Real=1e-2)
+    getStartGuess_xT(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; threshold::Real=1e-2)
 
 Generate an initial guess for the optimization problem in `prod_fun` such that the implied labor demand is non-trivial.
 
@@ -24,7 +24,7 @@ If the implied labor demand for any task is below the threshold, the `xT` values
 
 If the adjustment process encounters an error, new `xT` values are generated from scratch.
 """
-function find_initial_guess(θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; threshold::Real=1e-2)
+function  getStartGuess_xT(θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; threshold::Real=1e-2)
     H = length(αVec)  # Number of tasks
     # Initial guess for q is fixed at 1
     initial_q = 0.0  # log(1) is 0
