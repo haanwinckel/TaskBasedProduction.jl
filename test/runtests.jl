@@ -9,10 +9,10 @@ function run_tests(labor_input::Vector{Float64})
     z = 1.2
     αVec = [0.1, 0.2, 0.3]
 
-    initial_guess = find_initial_guess(θ, κ, z, αVec; threshold=1e-2)
-    q, xT = prod_fun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess, x_tol=1e-10)
+    initial_guess = getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
+    q, xT = prodFun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess, x_tol=1e-10)
     MPL = margProdLabor(labor_input, θ, κ, z, αVec)
-    ϵ_sub, ϵ_compl = elasticity_sub_comp(labor_input, θ, κ, z, αVec, MPL, xT, q)
+    ϵ_sub, ϵ_compl = elasticitySubComp(labor_input, θ, κ, z, αVec, MPL, xT, q)
 
     # Test for unitInputDemand
     @testset "unitInputDemand Tests" begin
@@ -40,8 +40,8 @@ function run_tests(labor_input::Vector{Float64})
         for i in 1:H
             perturbation = zeros(H)
             perturbation[i] = tol
-            qp, xTp = prod_fun(labor_input + perturbation, θ, κ, z, αVec; initial_guess=initial_guess, x_tol=1e-10)
-            qn, xTn = prod_fun(labor_input - perturbation, θ, κ, z, αVec; initial_guess=initial_guess, x_tol=1e-10)
+            qp, xTp = prodFun(labor_input + perturbation, θ, κ, z, αVec; initial_guess=initial_guess, x_tol=1e-10)
+            qn, xTn = prodFun(labor_input - perturbation, θ, κ, z, αVec; initial_guess=initial_guess, x_tol=1e-10)
             num_MPL[i] = (qp - qn) / (2 * tol)
         end
         @test isapprox(MPL, num_MPL, atol=1e-3)
@@ -53,13 +53,13 @@ function run_tests(labor_input::Vector{Float64})
     e_h2(x) = exp(0.2 * x)
     e_h3(x) = exp(0.3 * x)
     e_h = [e_h1, e_h2, e_h3]  # Example e_h functions
-    initial_guess_gen = find_initial_guess_gen(z, b_g, e_h; threshold=1e-2, verbose=false)
-    q_gen, xT_gen = prod_fun_general(labor_input, z, b_g, e_h; initial_guess=initial_guess_gen)
-    labor_input_general =  unitInputDemand_general(xT_gen, q_gen, z, b_g, e_h)
-    MPL_gen = margProdLabor_general(labor_input_general, z, b_g, e_h, xT_gen, q_gen)
-    ϵ_sub_gen, ϵ_compl_gen = elasticity_sub_comp_general(labor_input_general, z, b_g, e_h, MPL_gen, xT_gen, q_gen)
+    initial_guess_gen = getStartGuessGen_xT(z, b_g, e_h; threshold=1e-2, verbose=false)
+    q_gen, xT_gen = prodFunGeneral(labor_input, z, b_g, e_h; initial_guess=initial_guess_gen)
+    labor_input_general =  unitInputDemandGeneral(xT_gen, q_gen, z, b_g, e_h)
+    MPL_gen = margProdLaborGeneral(labor_input_general, z, b_g, e_h, xT_gen, q_gen)
+    ϵ_sub_gen, ϵ_compl_gen = elasticitySubCompGeneral(labor_input_general, z, b_g, e_h, MPL_gen, xT_gen, q_gen)
 
-    @testset "prod_fun_general comparison test" begin
+    @testset "prodFunGeneral comparison test" begin
         @test isapprox(q_gen, q, atol=1e-5)
         @test isapprox(xT_gen, xT, atol=1e-5)
     end
@@ -83,7 +83,7 @@ function run_tests(labor_input::Vector{Float64})
     @testset "Invalid density" begin
         # Test to check if an error is thrown when b_g is not a valid density function
         b_g_invalid = x -> 4 * exp(-x)  # This does not integrate to 1 over the entire domain
-        @test_throws ErrorException unitInputDemand_general(xT_gen, q_gen, z, b_g_invalid, e_h)
+        @test_throws ErrorException unitInputDemandGeneral(xT_gen, q_gen, z, b_g_invalid, e_h)
     end
 
     @testset "Numerical Elasticity of complementarity" begin

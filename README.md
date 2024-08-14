@@ -22,8 +22,12 @@ z = 1.2
 αVec = [0.1, 0.2, 0.3]
 labor_input=[0.5; 0.04; 0.19;;]
 
-initial_guess=getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
+initial_guess=getStartGuess_xT(θ, κ, z, αVec)
 q, xT = prodFun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess)
+# note this is the same as not including initial guess since it will computed within the function
+q, xT = prodFun(labor_input, θ, κ, z, αVec)
+
+
 
 println("Quantity Produced: ", q)
 println("Task Thresholds: ", xT)
@@ -56,9 +60,8 @@ e_h2(x)=exp(0.2*x)
 e_h3(x)=exp(0.3*x)
 e_h = [e_h1, e_h2, e_h3]  # Example e_h functions
 
-initial_guess_gen=getStartGuessGen_xT(z, b_g, e_h; threshold=1e-2, verbose=false)
-initial_guess_gen=initial_guess
-q_gen, xT_gen= prodFunGeneral(labor_input,z,b_g, e_h; initial_guess=initial_guess_gen)
+
+q_gen, xT_gen= prodFunGeneral(labor_input,z,b_g, e_h)
 
 labor_input_general = unitInputDemandGeneral(xT_gen, q_gen, z, b_g, e_h)
 println("Labor Demand: ", labor_input_general)
@@ -104,8 +107,7 @@ If labor inputs per each type are known, they can be given to the function prodF
 ### With functional forms
 ```julia
 labor_input=[0.5; 0.04; 0.19;;]
-initial_guess=getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
-q, xT = prodFun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess)
+q, xT = prodFun(labor_input, θ, κ, z, αVec)
 ```
 
 
@@ -222,8 +224,7 @@ If labor inputs per each type are known, they can be given to the function prod_
 ### With general parameterization
 ``` julia
 #  General parameterization
-initial_guess=getStartGuessGen_xT(z, b_g, e_h)
-q, xT=prodFunGeneral(labor_input,z,b_g, e_h; initial_guess=initial_guess)
+q, xT=prodFunGeneral(labor_input,z,b_g, e_h)
 ```
 
 ## 3)  Elasticity of complementarity and substitution
@@ -325,7 +326,7 @@ Inputs:
 - `κ`: Blueprint shape parameter.
 - `z`: Productivity parameter.
 - `αVec`: Array of comparative advantage values with H elements.
-- `initial_guess`: (optional) Initial guess for optimization. If not provided, defaults to zeros array.
+- `initial_guess`: (optional) Initial guess for optimization. If not provided, sensible starting point is compute within the function.
 - `optim_options`: (optional) Optimization options. If not provided, defaults to high tolerance values.
 
 Returns:
@@ -333,7 +334,7 @@ Returns:
 - `xT`: Array of task thresholds.
 
 ``` julia
-    prod_fun(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; initial_guess=nothing, optim_options=nothing)
+    prodFun(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; initial_guess=nothing, optim_options=nothing)
 ```
 # 4) **elasticitySubComp**
 
@@ -353,7 +354,7 @@ Calculates the elasticity of substitution and complementarity for a given set of
 - `ϵ_h_compl`: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
 
 ``` julia
-    elasticity_sub_comp(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; MPL=nothing, xT=nothing) -> (AbstractArray{<:Real}, AbstractArray{<:Real})
+    elasticitySubComp(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; MPL=nothing, xT=nothing) -> (AbstractArray{<:Real}, AbstractArray{<:Real})
 ```
 # 5) **unitInputDemandGeneral**
 
@@ -376,7 +377,7 @@ over the intervals defined by the thresholds in `xT`.
 
 
 ``` julia 
-unitInputDemand_general(xT::Vector{Float64}, z::Real, b_g::Function, e_h::Vector{Function}) -> Vector{Float64}
+unitInputDemandGeneral(xT::Vector{Float64}, z::Real, b_g::Function, e_h::Vector{Function}) -> Vector{Float64}
 ```
 # 6) **margProdLaborGeneral**
 
@@ -394,7 +395,7 @@ Calculates the marginal productivity of labor for each worker type given the inp
 - An array representing the marginal productivity of labor for each worker type.
 
 ``` julia
-margProdLabor_general(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}; xT=nothing) -> AbstractArray{<:Real}
+margProdLaborGeneral(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}; xT=nothing) -> AbstractArray{<:Real}
 ```
 # 7) **prodFunGeneral**
 
@@ -405,7 +406,7 @@ Inputs:
 - `z`: Productivity parameter.
 - `b_g`: Blueprint density function.
 - `e_h`: Vector of efficiency functions, one for each type.
-- `initial_guess`: (optional) Initial guess for optimization. If not provided, defaults to zeros array.
+- `initial_guess`: (optional) Initial guess for optimization. If not provided, sensible starting point is compute within the function.
 - `x_tol`: (optional) Tolerance for the solution vector. Default is 1e-12.
 - `f_tol`: (optional) Tolerance for the function value. Default is 1e-12.
 - `g_tol`: (optional) Tolerance for the gradient. Default is 1e-12.
@@ -417,7 +418,7 @@ Returns:
 - `xT`: Array of task thresholds.
 
 ``` julia
-    prod_fun_general(labor_input::AbstractArray{<:Real}, z::Real, b_g:: Function, e_h::Vector{Function}; initial_guess=nothing, x_tol=1e-12, f_tol=1e-12, g_tol=1e-12, iterations=1000, max_retries=5)
+    prodFunGeneral(labor_input::AbstractArray{<:Real}, z::Real, b_g:: Function, e_h::Vector{Function}; initial_guess=nothing, x_tol=1e-12, f_tol=1e-12, g_tol=1e-12, iterations=1000, max_retries=5)
 ```
 # 8) **elasticitySubCompGeneral**
 
@@ -436,7 +437,7 @@ Calculates the elasticity of substitution and complementarity for a given set of
 - `ϵ_h_compl`: Matrix of elasticity of complementarity values for each worker type h (rows) relative to worker type h_prime (columns).
 
 ``` julia
-    elasticity_sub_comp_general(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}; MPL=nothing, xT=nothing) -> (AbstractArray{<:Real}, AbstractArray{<:Real})
+    elasticitySubCompGeneral(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}; MPL=nothing, xT=nothing) -> (AbstractArray{<:Real}, AbstractArray{<:Real})
 ```
 
 # 9) **getStartGuess_xT**
@@ -457,7 +458,7 @@ Generate an initial guess for the optimization problem in `prod_fun` such that t
 
 
 ``` julia
-    find_initial_guess(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; threshold::Real=1e-2)
+    getStartGuess_xT(labor_input::AbstractArray{<:Real}, θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:Real}; threshold::Real=1e-2)
 ```
 
 # 10) **getStartGuessGen_xT**
@@ -477,7 +478,7 @@ Generate an initial guess for the optimization problem using a general density f
 - `initial_guess::Array{<:Real}`: A vector containing the initial guess for the optimization, including the log of the initial production quantity `q` and the initial task thresholds `xT`.
 
 ``` julia
-  find_initial_guess_gen(labor_input::AbstractArray{<:Real}, z::Real, αVec::AbstractArray{<:Real}, pdf::Function; threshold::Real=1e-2, verbose::Bool=false)
+  getStartGuessGen_xT(labor_input::AbstractArray{<:Real}, z::Real, αVec::AbstractArray{<:Real}, pdf::Function; threshold::Real=1e-2, verbose::Bool=false)
 ``` 
 
 ## Contributing

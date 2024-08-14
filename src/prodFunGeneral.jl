@@ -19,9 +19,23 @@ Returns:
 - `q`: Quantity produced.
 - `xT`: Array of task thresholds.
 """
-function prodFunGeneral(labor_input::AbstractArray{<:Real}, z::Real, b_g::Function, e_h::Vector{Function}; 
-    initial_guess=zeros(length(labor_input)), x_tol=1e-12, f_tol=1e-12, g_tol=1e-12, iterations=1000, max_retries=5)
+function prodFunGeneral(
+    labor_input::AbstractArray{<:Real}, 
+    z::Real, 
+    b_g::Function, 
+    e_h::Vector{Function}; 
+    initial_guess=nothing,  # Allow for a default of nothing
+    x_tol=1e-12, 
+    f_tol=1e-12, 
+    g_tol=1e-12, 
+    iterations=1000, 
+    max_retries=5
+)
 
+    # If initial_guess is nothing, calculate it using getStartGuessGen_xT
+    if initial_guess === nothing
+        initial_guess = getStartGuessGen_xT(z, b_g, e_h)
+    end
     function objFun(x)
         imp_q = exp(x[1])
         imp_xT = cumsum(exp.(x[2:end]))

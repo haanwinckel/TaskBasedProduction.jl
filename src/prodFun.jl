@@ -10,7 +10,7 @@ Inputs:
 - `κ`: Blueprint shape parameter.
 - `z`: Productivity parameter.
 - `αVec`: Array of comparative advantage values with H elements.
-- `initial_guess`: (optional) Initial guess for optimization. If not provided, defaults to zeros array.
+- `initial_guess`: (optional) Initial guess for optimization. If not provided, a starting guess is obtained within the function using  getStartGuess_xT.
 - `optim_options`: (optional) Optimization options. If not provided, defaults to high tolerance values.
 
 Returns:
@@ -23,7 +23,7 @@ function prodFun(
     κ::Real, 
     z::Real, 
     αVec::AbstractArray{<:Real}; 
-    initial_guess=zeros(length(labor_input)), 
+    initial_guess=nothing,  # Allow for a default of nothing
     x_tol=1e-8, 
     f_tol=1e-8, 
     g_tol=1e-8, 
@@ -31,6 +31,10 @@ function prodFun(
     max_retries=5
 )
 
+    # If initial_guess is nothing, calculate it using getStartGuess_xT
+    if initial_guess === nothing
+        initial_guess = getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
+    end
     function residuals(x::AbstractVector)
         imp_q = exp(x[1])
         imp_xT = cumsum(exp.(x[2:end]))

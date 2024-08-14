@@ -1,3 +1,4 @@
+using Revise
 using TaskBasedProduction 
 
 θ = 1.0
@@ -6,8 +7,8 @@ z = 1.2
 αVec = [0.1, 0.2, 0.3]
 labor_input=[0.5; 0.04; 0.19;;]
 
-initial_guess=getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
-q, xT = prodFun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess)
+
+q, xT = prodFun(labor_input, θ, κ, z, αVec)
 
 println("Quantity Produced: ", q)
 println("Task Thresholds: ", xT)
@@ -41,9 +42,7 @@ e_h2(x)=exp(0.2*x)
 e_h3(x)=exp(0.3*x)
 e_h = [e_h1, e_h2, e_h3]  # Example e_h functions
 
-initial_guess_gen=getStartGuessGen_xT(z, b_g, e_h; threshold=1e-2, verbose=false)
-initial_guess_gen=initial_guess
-q_gen, xT_gen= prodFunGeneral(labor_input,z,b_g, e_h; initial_guess=initial_guess_gen)
+q_gen, xT_gen= prodFunGeneral(labor_input,z,b_g, e_h)
 
 labor_input_general = unitInputDemandGeneral(xT_gen, q_gen, z, b_g, e_h)
 println("Labor Demand: ", labor_input_general)
@@ -66,6 +65,8 @@ xT = (1 ./ diff_alpha) .* log_wage_ratios
 # Calculate labor unit input requirements 
 labor_input_1 = unitInputDemand(xT, q, θ, κ, z, αVec)
 println("Labor Input: ", labor_input_1)
+
+
 # Competitive labor market with general functions
 # Objective function for optimization
 function objective(x, h)
@@ -76,7 +77,7 @@ end
 # Find the solutions for xT_h
 H=length(wage)
 xT = Vector{Float64}(undef, H-1)
-# Initial guess: recall that the first element is q
+# Initial guess: This is a function to get sensible starting point for the optimization. Recall that the first element is q
 initial_guess=getStartGuessGen_xT(z, b_g, e_h)
 for h in 1:H-1
      x0=[initial_guess[h+1]]
@@ -91,13 +92,11 @@ println("Labor Input: ", labor_input_2)
 # Use case 2: Given labor input, use the production function to obtain total production and task thresholds
 
 labor_input=[0.5; 0.04; 0.19;;]
-initial_guess=getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
-q, xT = prodFun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess)
+q, xT = prodFun(labor_input, θ, κ, z, αVec)
 
 
 #  General parameterization
-initial_guess=getStartGuessGen_xT(z, b_g, e_h)
-q, xT=prodFunGeneral(labor_input,z,b_g, e_h; initial_guess=initial_guess)
+q, xT=prodFunGeneral(labor_input,z,b_g, e_h)
 
 # Use case 3: Calculate the elasticity of complementarity and substitution given labor inputs and total production and task thresholds
 # Call elasticity_substitution with labor demand given. 
@@ -135,8 +134,8 @@ function objective_to_minimize(initial_guess)
     return log.(labor_input ./ labor_supply)
 end
 
-# Initial guess
-initial_guess = getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
+# Initial guess to get sensible starting point
+initial_guess = getStartGuess_xT(θ, κ, z, αVec)
 using LeastSquaresOptim
 result = optimize(objective_to_minimize, initial_guess, LevenbergMarquardt())
 
