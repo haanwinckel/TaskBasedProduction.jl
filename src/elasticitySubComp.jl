@@ -30,16 +30,15 @@ function elasticitySubComp(
     # Compute labor_input if it's not provided
     if labor_input === nothing
         labor_input =  unitInputDemand(xT, q, θ, κ, z, αVec)
-        MPL = margProdLabor(labor_input, θ, κ, z, αVec)
+        MPL = margProdLabor(labor_input, θ, κ, z, αVec, xT, q)
     end
     
     if xT === nothing || q===nothing
-        initial_guess=getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
-        q, xT = prodFun(labor_input, θ, κ, z, αVec; initial_guess=initial_guess)
+        q, xT = prodFun(labor_input, θ, κ, z, αVec)
     end
 
     if MPL === nothing
-        MPL = margProdLabor(labor_input, θ, κ, z, αVec)
+        MPL = margProdLabor(labor_input, θ, κ, z, αVec, xT, q)
     end
 
     

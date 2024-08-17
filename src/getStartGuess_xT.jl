@@ -46,7 +46,7 @@ function  getStartGuess_xT(θ::Real, κ::Real, z::Real, αVec::AbstractArray{<:R
             try
                 imp_xT = cumsum(exp.(xT[1:end]))
                 imp_q=exp(initial_q)
-                imp_l = unitInputDemand(imp_xT, imp_q, θ, κ, z, αVec, true)
+                imp_l = unitInputDemand(imp_xT, imp_q, θ, κ, z, αVec)
             catch
                 # If there's an error, generate new initial xT values from scratch
                 xT = generate_initial_xT()

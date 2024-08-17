@@ -33,7 +33,7 @@ function prodFun(
 
     # If initial_guess is nothing, calculate it using getStartGuess_xT
     if initial_guess === nothing
-        initial_guess = getStartGuess_xT(θ, κ, z, αVec; threshold=1e-2)
+        initial_guess = getStartGuess_xT(θ, κ, z, αVec)
     end
     function residuals(x::AbstractVector)
         imp_q = exp(x[1])
@@ -61,7 +61,7 @@ function prodFun(
         catch
             retry_count += 1
             println("prod_fun: An error occurred or could not find optimal allocation. Retrying with a new initial guess. Retry count: $retry_count")
-            initial_guess = find_initial_guess(θ, κ, z, αVec; threshold=1e-2)  # Adjust this to your actual method of finding a new initial guess
+            initial_guess = getStartGuess_xT(θ, κ, z, αVec)  # Adjust this to your actual method of finding a new initial guess
         end
     end
 

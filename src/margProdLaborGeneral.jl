@@ -30,7 +30,7 @@ function margProdLaborGeneral(
     
     # If labor_input is missing, calculate it
     if labor_input === nothing
-        labor_input = q * unitInputDemandGeneral(xT, q, z, b_g, e_h)
+        labor_input = unitInputDemandGeneral(xT, q, z, b_g, e_h)
     end
 
     H = length(e_h)

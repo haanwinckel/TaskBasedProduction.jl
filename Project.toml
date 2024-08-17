@@ -1,6 +1,6 @@
 name = "TaskBasedProduction"
 uuid = "0c6611b4-5dad-443c-92fe-8be93fb3df91"
-authors = ["Luca Lorenzini"]
+authors = ["Daniel Haanwinckel, Luca Lorenzini"]
 version = "1.0.0"
 
 [deps]
@@ -13,7 +13,12 @@ SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [compat]
 julia = "1.6.7"
-
+Distributions = "0.25 - 0.25"          
+LeastSquaresOptim = "0.8 - 0.8"        
+Optim = "1.9 - 1.9"                    
+QuadGK = "2.10 - 2.10"                 
+SpecialFunctions = "2.4 - 2.4"    
+    
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 

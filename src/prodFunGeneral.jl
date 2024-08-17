@@ -62,7 +62,7 @@ function prodFunGeneral(
         catch
             retry_count += 1
             println("prod_fun_general: An error occurred or could not find optimal allocation. Retrying with a new initial guess. Retry count: $retry_count")
-            initial_guess = find_initial_guess_gen(z, b_g, e_h; threshold=1e-2)  # Adjust this to your actual method of finding a new initial guess
+            initial_guess = getStartGuessGen_xT(z, b_g, e_h)  # Adjust this to your actual method of finding a new initial guess
         end
     end
 

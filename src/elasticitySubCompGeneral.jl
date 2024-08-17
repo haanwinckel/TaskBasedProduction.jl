@@ -21,16 +21,15 @@ function elasticitySubCompGeneral(labor_input::Union{AbstractArray{<:Real}, Noth
     # If labor_input is missing, calculate it using unitInputDemand
     if labor_input === nothing
         labor_input = unitInputDemandGeneral(xT, q, z, b_g, e_h)
-        MPL = margProdLaborGeneral(labor_input, z, b_g, e_h)
+        MPL = margProdLaborGeneral(labor_input, z, b_g, e_h, xT, q)
     end
     
     if xT === nothing || q===nothing
-        initial_guess=getStartGuessGen_xT(z, b_g, e_h; threshold=1e-2, verbose=false)
-        q, xT= prodFunGeneral(labor_input,z,b_g, e_h; initial_guess=initial_guess)
+        q, xT= prodFunGeneral(labor_input,z,b_g, e_h)
     end
 
     if MPL === nothing
-        MPL = margProdLaborGeneral(labor_input, z, b_g, e_h)
+        MPL = margProdLaborGeneral(labor_input, z, b_g, e_h, xT, q)
     end
 
     
