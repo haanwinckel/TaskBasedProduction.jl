@@ -6,11 +6,9 @@ TaskBasedProduction is a Julia package that provides functions for calculating u
 
 ## Installation
 
-To install TaskBasedProduction, you can clone the repository and add it to your Julia environment:
-
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/haanwinckel/TaskBasedProduction.git")
+Pkg.add("TaskBasedProduction.git")
 ```
 ## Example Usage
 ```julia
