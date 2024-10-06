@@ -8,7 +8,7 @@ TaskBasedProduction is a Julia package that provides functions for calculating u
 
 ```julia
 using Pkg
-Pkg.add("TaskBasedProduction.git")
+Pkg.add("TaskBasedProduction")
 ```
 ## Example Usage
 ```julia
