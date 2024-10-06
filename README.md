@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/haanwinckel/TaskBasedProduction.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/haanwinckel/TaskBasedProduction.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
-TaskBasedProduction is a Julia package that provides functions for calculating unit labor demands, marginal products of labor, production functions, assignment thresholds, elasticities of substitution, and complementarities among worker types in a task-based production model. The package includes utilities for handling incomplete gamma functions and power series representations to facilitate these calculations. This package was developed by Daniel Haanwinckel and Luca Lorenzini based on the paper *Supply, Demand, Institutions, and Firms: A Theory of Labor Market Sorting and the Wage Distribution* by Daniel Haanwinckel ([NBER Working Paper No. 31318](https://www.nber.org/papers/w31318)).
+TaskBasedProduction is a Julia package that provides functions for calculating unit labor demands, marginal products of labor, output values, assignment thresholds, and elasticities of substitution / complementarity for the model of production in *Supply, Demand, Institutions, and Firms: A Theory of Labor Market Sorting and the Wage Distribution* by Daniel Haanwinckel ([NBER Working Paper No. 31318](https://www.nber.org/papers/w31318)). The package includes utilities both for the Exponential-gamma parameterization described in the paper as well as for arbitrary functional forms for blueprints and efficiency functions. This package was developed by Daniel Haanwinckel and Luca Lorenzini.
 
 ## Installation
 
